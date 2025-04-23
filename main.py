@@ -1,11 +1,6 @@
-import time, math
+import time, math, os
 
-def chapter(ch):
-    width = 50
-    center_align = "{:^{}}".format(ch.upper(), width)
-    print("\n", f"|{center_align}|", "\n")
-    
-class Monster:
+class Monster: # fix later
     ''' Should be used in fighting.py. '''
     def __init__(self):
         ''' Define the health, material drop, lower and upper threshold of encountering, and basic and special attacks. '''
@@ -33,6 +28,77 @@ class Monster:
             atk_type = self.basic_atk
             dmg_dealt = self.basic_dmg
         return f"{self.monster_name} used {atk_type}!\nIt did {dmg_dealt}"
+
+def chapter(ch):
+    width = 50
+    center_align = "{:^{}}".format(ch.upper(), width)
+    print("\n", f"|{center_align}|", "\n")
+
+def encounter_monster(monster_object):
+    pass
+
+def moving_in_game(sections, building_positions, screen_width):
+    player_pos = 0  # value changes to simulate player movement
+    scroll_offset = 0  # initial scroll offset (simulates movement)
+
+    # def the boundaries for each section, 20 total
+    section_boundaries = {
+        1: (0, 9),  # Section 1: from position 0 to 4
+        2: (10, 19),  # Section 2: from position 5 to 9
+    }
+
+    # track current section
+    current_section = 1
+
+    # while-loop to continuously move
+    while True:
+
+        # Calculate the actual position of the player relative to the scroll
+        player_actual_pos = (player_pos - scroll_offset) % screen_width
+
+        # Draw the "screen" with the player (@)
+        screen = [' '] * screen_width  # Create an empty screen
+        
+        # Display building behind player if overlapped
+        building_pos = building_positions[current_section]
+        screen[building_pos] = "#"
+        
+        # Always place the player at the center of the screen
+        screen[player_actual_pos] = '웃'
+
+        # Display the current section description
+        print(sections[current_section])
+
+        # Print the screen
+        print(''.join(screen))
+        
+        if player_actual_pos == building_pos:
+            print('[E] to interact')
+
+        # Get user input to move
+        move = input("Move (left [A], right [D], quit [Q]): ").lower()
+
+        # FIX THIS LATER FOR SECTION BARRIERS
+        if move == 'a':  # Move left
+            scroll_offset = (scroll_offset + 1) % screen_width
+            player_pos -= 1  # Move player left
+        elif move == 'd':  # Move right
+            scroll_offset = (scroll_offset - 1) % screen_width
+            player_pos += 1  # Move player right
+        elif move == 'q':  # Quit the game
+            print("Game Over!")
+            break  # Exit the game
+
+        # Check if the player has moved off-screen and should enter a new section
+        for section, (start, end) in section_boundaries.items():
+            # Check if player position is within the section boundaries
+            if start <= player_pos and player_pos <= end:
+                if section != current_section:
+                    current_section = section  # Update the current section
+                    print(f"\nYou have entered {sections[section]}!\n")
+        
+        os.system('cls' if os.name == 'nt' else 'clear')
+
 
 
 
@@ -76,9 +142,6 @@ print("\tPrincess Maribelle: WHAT IN THE WORLD IS GOING ON?!")
 time.sleep(0.8)
 print("*Her screams are abruptly silenced by the being, its serrated claws delicately closing around her and sequestering her from the rest of the world. Almost as quickly as it comes, the being disappears, bringing Princess Maribelle with it.*")
 time.sleep(2)
-'''
-
-chapter("1: The Lonely Forest")
 
 time.sleep(1)
 print("DEEP IN THE FOREST...\n")
@@ -98,15 +161,24 @@ print("*You begrudgingly accept the quest.*")
 time.sleep(1)
 print(f"\t{player_name}: Very well... the Berries will have to wait.")
 time.sleep(0.8)
+'''
 
-chapter("2: The Hardy Sea of Flying Fish")
 
+print('prologue')
+chapter("1: The Lonely Forest")
+time.sleep(2)
 
+# sections for the screen and buildings, just for devs ease of locating places
+sections1 = {1: "Cottage in the Woods",
+            2: "Abandoned Campsite"}
+building_pos1 = {1: 4, 2: 8}
+moving_in_game(sections1, building_pos1, 20)
+
+'''chapter("2: The Hardy Sea of Flying Fish")
 
 chapter("3: The Mountain Bearing Shiny Teeth")
 
-chapter("4: The Hideout")
-
+chapter("4: The Hideout")'''
 
 
 
