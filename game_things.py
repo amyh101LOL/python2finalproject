@@ -9,7 +9,7 @@ weapons = [{"Amber Duel": {'Info' : "Knight sword", 'atk' : 8, 'dmg' : 1, 'place
             {"Great Warrior’s Valor": {'Info' : "Knight sword", 'atk' : 70, 'dmg' : 11, 'place' : "The Mountain Bearing Shiny Teeth"}}]
 
 
-items = [{'name' : 'Bungle Berry', 'uses' : 1, 'hp' : 7, 'atk' : 0, 'place': 'The Lonely Forest'},
+items = [{'Bungle Berry': {'uses' : 1, 'hp' : 7, 'atk' : 0, 'place': 'The Lonely Forest'}},
         {'name' : 'Tinkle Berry', 'uses' : 1, 'hp' : 5, 'atk' : 0, 'place': 'The Lonely Forest'},
         {'name' : "Nature’s Call", 'uses' : 1, 'hp' : 7, 'atk' : 15, 'def' : 10, 'place': 'The Lonely Forest'},
         {'name' : 'Panacea Potion', 'uses' : 1, 'hp' : 25, 'atk' : 10, 'place': 'The Lonely Forest'},
@@ -46,4 +46,6 @@ class Monster: # fix later
         self.basic_dmg = 0
         self.special_atk = ""
         self.special_dmg = 0
-
+    
+    def basic_atk(self, damage, special_effect):
+        pass
