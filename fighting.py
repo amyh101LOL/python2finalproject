@@ -1,20 +1,40 @@
-#from storage import Monster
+from game_things import Monster
 
-#monster_name = new Monster()
-monster_health = 40
-m_current_health = 40
-player_health = 50
-print(f"You encountered a {monster_name}!")
-print(f"Enemy: {monster_health}/{monster_health} HP")
+def battle(player, monster):
+    print(f"\nYou encountered a {monster.name}!\n")
+    print(f"\t\tEnemy: {monster.health}/{monster.max_health} HP")
 
-choice = input("\n[F] ATTACK, [I] USE ITEM, [R] RETREAT: ")
+    while monster.health > 0 and player['health'] > 0:
+        choice = input("\n[F] FIGHT, [I] USE ITEM, [R] RETREAT: ").lower()
 
-initial_health = player_health
+        if choice == "f":
+            damage = player.use_weapon
+            print(f"You attack and deal {damage} damage!")
+            monster.take_dmg(damage)
 
+        elif choice == "i":
+            player.display_inventory # add this method
+            player.choose_item # add this method
+            print(f"You rummage through your bag... and find your {display_inventory[chosen_item]}. You use it.")
 
-if monster_health <= 0:
-    print("You win!")
-    print(f"{monster_name} dropped", )
-elif player_health <= 0:
-    print("You lose.")
-    player_health = initial_health
+        elif choice == "r":
+            print("You fled the battle.")
+            return
+
+        else:
+            print("Invalid choice. Try again.")
+            continue
+
+        if monster.is_defeated():
+            print(f"\nYou defeated the {monster.name}!")
+            print(f"It dropped: {monster.material}")
+            return
+
+        # Monster attacks
+        damage = monster.use_basic_attack()
+        player['health'] = max(0, player['health'] - damage)
+        print(f"You have {player['health']} HP left.")
+
+        if player['health'] <= 0:
+            print("\nYou were defeated... Game Over!")
+            return
