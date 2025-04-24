@@ -47,3 +47,4 @@ class Monster: # fix later
         self.special_atk = ""
         self.special_dmg = 0
 
+    

@@ -75,8 +75,14 @@ def moving_in_game(sections, building_positions, screen_width):
         if player_actual_pos == building_pos:
             print('[E] to interact')
 
-        # Get user input to move
-        move = input("Move (left [A], right [D], quit [Q]): ").lower()
+
+        while True:
+            try:
+                # Get user input to move
+                move = input("Move (left [A], right [D], quit [Q]): ").lower()
+                break
+            except TypeError:
+                print("Error: Please enter a valid input\n")
 
         # FIX THIS LATER FOR SECTION BARRIERS
         if move == 'a':  # Move left
@@ -88,6 +94,7 @@ def moving_in_game(sections, building_positions, screen_width):
         elif move == 'q':  # Quit the game
             print("Game Over!")
             break  # Exit the game
+            
 
         # Check if the player has moved off-screen and should enter a new section
         for section, (start, end) in section_boundaries.items():
@@ -181,4 +188,7 @@ chapter("3: The Mountain Bearing Shiny Teeth")
 chapter("4: The Hideout")'''
 
 
-
+#should use:
+#comprehensions
+#filter, map
+#lambda
