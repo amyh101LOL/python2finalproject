@@ -8,7 +8,7 @@ def chapter(ch):
 def encounter_monster(monsters): # create lists of monsters for each section/chapter
     threshold = math.randint(1, 10)
     if 0 <= threshold <= 7:
-        return monsters[0]
+        return monsters[0] # return the monster object
     elif 8 <= threshold <= 10:
         return monsters[1]
 

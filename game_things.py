@@ -35,6 +35,8 @@ items = {'Bungle Berry': {'hp' : 7, 'location': 'The Lonely Forest'},
         'Refined Serum' : {'hp' : 10, 'def' : 15, 'location': 'The Hideout'},
         "Beast’s Final Hour" : {'hp' : 70, 'atk' : 90, 'def':50, 'location': 'The Hideout'}}
 
+
+
 class Player:
     ''' Simulate the Player and their stats. '''
     
