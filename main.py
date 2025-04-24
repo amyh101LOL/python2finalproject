@@ -5,8 +5,12 @@ def chapter(ch):
     center_align = "{:^{}}".format(ch.upper(), width)
     print("\n", f"|{center_align}|", "\n")
 
-def encounter_monster(monster):
-    pass
+def encounter_monster(monsters): # create lists of monsters for each section/chapter
+    threshold = math.randint(1, 10)
+    if 0 <= threshold <= 7:
+        return monsters[0]
+    elif 8 <= threshold <= 10:
+        return monsters[1]
 
 def moving_in_game(sections, section_boundaries, building_positions, screen_width):
     player_pos = 0  # value changes to simulate player movement
@@ -59,6 +63,8 @@ def moving_in_game(sections, section_boundaries, building_positions, screen_widt
         else:  # Quit the game
             print("Please enter either A or D.")
             continue  # Exit the game
+        
+        
 
         # Check if the player has moved off-screen and should enter a new section
         for section, (start, end) in section_boundaries.items():
