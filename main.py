@@ -1,51 +1,16 @@
-import time, math, os
-
-class Monster: # fix later
-    ''' Should be used in fighting.py. '''
-    def __init__(self):
-        ''' Define the health, material drop, lower and upper threshold of encountering, and basic and special attacks. '''
-        self.health = 1
-        self.material = ""
-        self.smallest_amt = 0 # Lower threshold of 
-        self.biggest_amt = 1
-        self.basic_atk = ""
-        self.basic_dmg = 0
-        self.special_atk = ""
-        self.special_dmg = 0
-    
-    def material_drop(self):
-        ''' Amount of material dropped. '''
-        amount = math.randint(smallest_amt, biggest_amt)
-        return f"{amount} {self.material} added to inventory."
-    
-    def attack(self):
-        ''' Determine the attack type, then use it. '''
-        roll = math.randint(1, 10)
-        if (roll >= 8):
-            atk_type = self.special_atk
-            dmg_dealt = self.special_dmg
-        elif (roll < 8):
-            atk_type = self.basic_atk
-            dmg_dealt = self.basic_dmg
-        return f"{self.monster_name} used {atk_type}!\nIt did {dmg_dealt}"
+import time, math, os, game_things, fighting
 
 def chapter(ch):
     width = 50
     center_align = "{:^{}}".format(ch.upper(), width)
     print("\n", f"|{center_align}|", "\n")
 
-def encounter_monster(monster_object):
+def encounter_monster(monster):
     pass
 
-def moving_in_game(sections, building_positions, screen_width):
+def moving_in_game(sections, section_boundaries, building_positions, screen_width):
     player_pos = 0  # value changes to simulate player movement
     scroll_offset = 0  # initial scroll offset (simulates movement)
-
-    # def the boundaries for each section, 20 total
-    section_boundaries = {
-        1: (0, 9),  # Section 1: from position 0 to 4
-        2: (10, 19),  # Section 2: from position 5 to 9
-    }
 
     # track current section
     current_section = 1
@@ -76,7 +41,13 @@ def moving_in_game(sections, building_positions, screen_width):
             print('[E] to interact')
 
         # Get user input to move
-        move = input("Move (left [A], right [D], quit [Q]): ").lower()
+        try:
+            move = input("Move (left [A], right [D]): ").strip().lower()
+        except TypeError:
+            print("Please enter either A or D.")
+        except Exception:
+            print("Please enter a valid input.")
+
 
         # FIX THIS LATER FOR SECTION BARRIERS
         if move == 'a':  # Move left
@@ -85,9 +56,9 @@ def moving_in_game(sections, building_positions, screen_width):
         elif move == 'd':  # Move right
             scroll_offset = (scroll_offset - 1) % screen_width
             player_pos += 1  # Move player right
-        elif move == 'q':  # Quit the game
-            print("Game Over!")
-            break  # Exit the game
+        else:  # Quit the game
+            print("Please enter either A or D.")
+            continue  # Exit the game
 
         # Check if the player has moved off-screen and should enter a new section
         for section, (start, end) in section_boundaries.items():
@@ -171,8 +142,10 @@ time.sleep(2)
 # sections for the screen and buildings, just for devs ease of locating places
 sections1 = {1: "Cottage in the Woods",
             2: "Abandoned Campsite"}
+sections1_boundaries = {1: (0,9),
+                        2: (10, 19)}
 building_pos1 = {1: 4, 2: 8}
-moving_in_game(sections1, building_pos1, 20)
+moving_in_game(sections1, sections1_boundaries, building_pos1, 20)
 
 '''chapter("2: The Hardy Sea of Flying Fish")
 
