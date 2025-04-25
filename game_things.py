@@ -1,4 +1,4 @@
-import random, main
+import math, random
 
 class Player:
     ''' Simulate the Player and their stats. '''
@@ -6,18 +6,25 @@ class Player:
     def __init__(self, name, health, max_health, inventory):
         self.name = name
         self.health = health # Changing HP
-        self.max_health = health # Max HP
+        self.max_health = max_health # Max HP
         self.attack = 0
         self.defense = 0
         self.inventory = inventory
+        self.in_battle = False
     
+    def enter_battle(self):
+        self.in_battle = True
+
     def use_weapon(self):
         return self.weapon.atk
     
+    def is_defeated(self):
+        return self.health <= 0
+    
     def open_inventory(self):
         print('\n-'.join([thing for thing in main.player.inventory]))
-        action = input("[U] Use Item, [C] Craft Item").strip().lower()
-        if action == 'u':
+        action = input("[E] Use Item, [C] Craft Item, [Q] Close Inventory").strip().lower()
+        if action == 'e':
             item_name = input("Enter the name of the item you would like to use:\t").strip().title()
             if item_name in items_movement.keys():
                 print(f"You used {item_name}.")
@@ -34,8 +41,13 @@ class Player:
                 if "def" in items_movement[item_name].keys():
                     self.defense += item_name['def']
                     print("DEF increased to", self.defense)
-                elif item_name == "Beetlelight Lantern":
+                elif item_name == "Beetlelight Lantern" and self.in_battle == False:
                     print(items_movement['Beetlelight Lantern'])
+                return
+        if action == 'c' and self.in_battle == False:
+            pass # bring up crafting menu
+        if action == 'q':
+            return
 
 class Monster:
     ''' Simulate a monster that can fight the Player. '''
@@ -51,6 +63,12 @@ class Monster:
         self.special_dmg = special_dmg # Amt of dmg dealt by special
         self.extra_dmg = 3
 
+    def prevent_retreat(self):
+        threshold = math.randint(1, 10)
+        if threshold <= 5:
+            return True
+        return False
+    
     def attack(self, special_chance):
         if random.randint(1, 10) <= special_chance:
             print(f"{self.name} uses {self.basic_atk} and deals {self.basic_dmg} damage!")
@@ -70,8 +88,12 @@ class Monster:
         return f"{self.name} | HP: {self.health}/{self.max_health}"
 
 class Boss(Monster):
-    def __init__(self):
-        self.health = 3 # placeholder cuz errors
+    ''' Simulate a monster boss that can fight the player. '''
+    def __init__(self, name, health, material, basic_atk, basic_dmg, special_atk, special_dmg, ultimate_atk, ultimate_dmg):
+        super().__init__(name, health, material, basic_atk, basic_dmg, special_atk, special_dmg)
+        self.ultimate_atk = ultimate_atk
+        self.ultimate_dmg = ultimate_dmg
+    
 
 weapons = {"Amber Duel": {'weapon_type' : "Knight Sword", 'atk' : 8}, # 'location' : "Spawn"
             "Dark-Dweller": {'weapon_type' : "Magic Sword", 'atk' : 18}, # 'location' : "The Lonely Forest"
@@ -104,19 +126,17 @@ items_fighting = {'Bungle Berry': {'hp' : 7}, #  'location': 'The Lonely Forest'
 
 items_movement = {'Beetlelight Lantern' : "0% monster encounter chance for 8 moves.",
         'Unlit Torch' : {'spd' : 3, 'def' : 3, 'location': 'The Mountain Bearing Shiny Teeth'},
-        'Fur Coat' : {'spd' : 5, 'atk' : 2, 'location': 'The Mountain Bearing Shiny Teeth'},
-        }
+        'Fur Coat' : {'spd' : 5, 'atk' : 2, 'location': 'The Mountain Bearing Shiny Teeth'}}
 
-
-# name, health, material, basic_atk, basic_dmg, special_atk, special_dmg, extra_dmg
 ch1_monsters = {'Goblin' : Monster('Goblin', 25, 'Scrap Cloth', 'Bonk', 5, 'Bash', 15),
                 'Drudead' : Monster('Drudead', 35, ['Dehydrated Shoots'], 'Tackle', 10, 'Body Slam', 25)}
-ch2_monsters = {'Fishky' : Monster('Fishky', 40, ['Glazed Scales', 'Translucent Drops'], 'Tail Whip', 15, 'Sky Plunge', 30),
-                'Zombat' : Monster('Zombat', 60, ['Echoing Shards', 'Gust'], 20, 'Sonic Boom', 45),
-                'Poisonorous' : Monster('Poisonorous', 70, ['Spine Fragments', 'Translucent Droplets'], 'Spikeball', 13, 'Drill Sting', 15)}
-ch3_monsters = {'Toskic' : Monster('Toskic', 100, ['Tufts of Snow', 'Hornsweep'], 18, 'Avalanche', 30),
-                'Mammauth' : Monster('Mammauth', 120, ['Tufts of Snow', 'Broken Icicles'], 'Burrow', 20, 'Tectonic Rage', 42),
-                'Frostfault' : Monster('Frostfault', 280, ['None'], 'Frostbite', 35, "Winter's Fury", 70)}
-ch4_monsters = {'Skelerat' : Monster('Skelerat', 95, 'Spine Fragments', 'Screech', 10, 'Ankle Bite', 20),
-                'Enhanced Drudead' : Monster('Enhanced Drudead', 200, 'Dehydrated Shoots', 'Tackle', 30, 'Body Slam', 75)}
-boss_monsters = {'Stage 1 Torricend' : Boss('Stage 1 Torricend')}
+ch2_monsters = {'Fishkys' : Monster('Fishkys', 40, ['Glazed Scales', 'Translucent Drops'], 'Tail Whip', 15, 'Sky Plunge', 30),
+                'Zombat' : Monster('Zombat', 60, ['Echoing Shards', 'Gust'], 'Gust', 20, 'Sonic Boom', 45),}
+ch3_monsters = {'Toskic' : Monster('Toskic', 100, ['Tufts of Snow', 'Hornsweep'], 'Hornsweep', 18, 'Avalanche', 30),
+                'Mammauth' : Monster('Mammauth', 120, ['Tufts of Snow', 'Broken Icicles'], 'Burrow', 20, 'Tectonic Rage', 42)}
+ch4_monsters = {'Skelerat' : Monster('Skelerat', 95, ['Spine Fragments'], 'Screech', 10, 'Ankle Bite', 20),
+                'Enhanced Drudead' : Monster('Enhanced Drudead', 200, ['Dehydrated Shoots'], 'Tackle', 30, 'Body Slam', 75)}
+boss_monsters = {'Poisonorous' : Boss('Poisonorous', 70, ['Spine Fragments', 'Translucent Droplets'], 'Spikeball', 13, 'Drill Sting', 15, 'Noxious Infestation', 30),
+                 'Frostfault' : Boss('Frostfault', 280, ['None'], 'Frostbite', 35, 'Shattering Verglas', 45, "Winter's Fury", 70),
+                 'Stage 1 Torricend' : Boss('Stage 1 Torricend', 700, ['None'], 'Lunge', 40, 'Waste Pump', 80, 'Eroding Rumble', 110),
+                 'Stage 2 Torricend' : Boss('Stage 2 Torricend', 1800, ['None'], 'Lockjaw', 70, 'Mortar Flush', 90, 'Ashes to Dust', 200)}

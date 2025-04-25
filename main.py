@@ -1,6 +1,8 @@
-import time, math, os, game_things, fighting
+import time, math, os
+from game_things import Player
+from fighting import *
 
-user = game_things.Player("", 80, 80, {'Skilled Crafter' : 1, "Amber Duel": 1, 'Tinkle Berry' : 4,})
+player = Player("", 80, 80, {'Skilled Crafter' : 1, "Amber Duel": 1, 'Tinkle Berry' : 4})
 
 def chapter(ch):
     width = 50
