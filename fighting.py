@@ -1,4 +1,4 @@
-from game_things import Monster
+import main, game_things
 
 def battle(player, monster):
     print(f"\nYou encountered a {monster.name}!\n")
@@ -13,9 +13,7 @@ def battle(player, monster):
             monster.take_dmg(damage)
 
         elif choice == "i":
-            player.display_inventory # add this method
-            player.choose_item # add this method
-            print(f"You rummage through your bag... and find your {display_inventory[chosen_item]}. You use it.")
+            player.open_inventory
 
         elif choice == "r":
             print("You fled the battle.")
