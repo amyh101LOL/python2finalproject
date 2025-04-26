@@ -37,7 +37,6 @@ class Player:
             
             try:
                 action = input("[E] Use Item, [R] View Craft Recipes, [W] View Weapons, [Q] Close Inventory: ").strip().lower()
-                break
             except TypeError:
                 print("\nPlease enter a letter (E, R, W, Q).\n")
                 time.sleep(0.8)

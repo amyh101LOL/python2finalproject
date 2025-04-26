@@ -84,7 +84,7 @@ def moving_in_game(sections, section_boundaries, building_positions, screen_widt
                 if section != current_section:
                     current_section = section  # Update the current section
                     print(f"\nYou have entered {sections[section]}!\n")
-        
+
 
 
 
