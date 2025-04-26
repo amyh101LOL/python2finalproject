@@ -77,9 +77,11 @@ class Player:
             elif action == 'r':
                 # view item crafting recipe. make a list
                 # and new key:value pairs for each craftable item in items lists.
+                print('need list of crafting items')
                 pass
             elif action == 'w': 
                 # view weapons
+                print('need list of weapons')
                 pass
             elif action == 'q': # CLose inventory
                 print("\nInventory closed.\n")

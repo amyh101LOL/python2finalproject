@@ -1,5 +1,6 @@
 from main import player
 from game_things import *
+import os
 
 def battle(monster):
     player.enter_battle()
