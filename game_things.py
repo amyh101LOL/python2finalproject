@@ -9,15 +9,16 @@ class Player:
         self.max_health = max_health # Max HP
         self.attack = 0
         self.defense = 0
-        self.inventory = {'Skilled Crafter' : 1, "Amber Duel": 1, 'Tinkle Berry' : 4}
+        self.inventory = {'Skilled Crafter' : 1, 'Tinkle Berry' : 4}
         self.materials = []
+        self.weapons = ["Amber Duel"]
         self.in_battle = False
     
     def enter_battle(self):
         self.in_battle = True
 
     def use_weapon(self):
-        return self.weapon.atk
+        return weapons[self.weapons]['atk']
     
     def is_defeated(self):
         return self.health <= 0
@@ -31,57 +32,62 @@ class Player:
             return
     
     def open_inventory(self):
-        print('Inventory (Items)\n', '-', '\n - '.join([f'{self.inventory[thing]} {thing}' for thing in self.inventory]), "\n")
-
         while True:
+            print('Inventory (Items)\n', '-', '\n - '.join([f'{self.inventory[thing]} {thing}' for thing in self.inventory]), "\n")
+            
             try:
-                action = input("[E] Use Item, [R] View Item Crafting Recipe, [Q] Close Inventory: ").strip().lower()
+                action = input("[E] Use Item, [R] View Craft Recipes, [W] View Weapons, [Q] Close Inventory: ").strip().lower()
                 break
             except TypeError:
-                print("\nPlease enter a letter (E, R, Q).\n")
+                print("\nPlease enter a letter (E, R, W, Q).\n")
                 time.sleep(0.8)
             except Exception:
                 print("\nPlease enter a valid input.\n")
                 time.sleep(0.8)
 
-        if action == 'e':
-            item_name = input("Enter the name of the item you would like to use: ").strip().title()
-            
-            if item_name in items_movement.keys() and self.in_battle == False:
-                print(f"You used {item_name}.")
+            if action == 'e':
+                item_name = input("Enter the name of the item you would like to use: ").strip().title()
                 
-                if "hp" in items_movement[item_name].keys():
-                    if self.health + item_name['hp'] <= self.max_health:
-                        self.health += item_name['hp']
-                    elif self.health + item_name['hp'] > self.max_health:
-                        self.health = self.max_health
-                    print("HP increased to", self.health)
-                if "atk" in items_movement[item_name].keys():
-                    self.attack += item_name['atk']
-                    print("ATK increased to", self.attack)
-                if "def" in items_movement[item_name].keys():
-                    self.defense += item_name['def']
-                    print("DEF increased to", self.defense)
-                elif item_name == "Beetlelight Lantern" and self.in_battle == False:
-                    print(items_movement['Beetlelight Lantern'])
+                if item_name in items_movement.keys() and self.in_battle == False:
+                    print(f"You used {item_name}.")
+                    
+                    if "hp" in items_movement[item_name].keys():
+                        if self.health + item_name['hp'] <= self.max_health:
+                            self.health += item_name['hp']
+                        elif self.health + item_name['hp'] > self.max_health:
+                            self.health = self.max_health
+                        print("HP increased to", self.health)
+                    if "atk" in items_movement[item_name].keys():
+                        self.attack += item_name['atk']
+                        print("ATK increased to", self.attack)
+                    if "def" in items_movement[item_name].keys():
+                        self.defense += item_name['def']
+                        print("DEF increased to", self.defense)
+                    elif item_name == "Beetlelight Lantern" and self.in_battle == False:
+                        print(items_movement['Beetlelight Lantern'])
+                    return
+                elif item_name in items_fighting.keys() and self.in_battle == True:
+                    # use battle item
+                    print('user should be in battle')
+                elif item_name == "Skilled Crafter":
+                    # use craft_inventory method
+                    print('craft_inventory needs to open')
+                else:
+                    print('\nItem cannot be used right now.\n')
+            elif action == 'r':
+                # view item crafting recipe. make a list
+                # and new key:value pairs for each craftable item in items lists.
+                pass
+            elif action == 'w': 
+                # view weapons
+                pass
+            elif action == 'q': # CLose inventory
+                print("\nInventory closed.\n")
+                time.wait(0.8)
                 return
-            elif item_name in items_fighting.keys() and self.in_battle == True:
-                # use battle item
-                print('user should be in battle')
-            elif item_name == "Skilled Crafter":
-                # use craft_inventory method
-                print('craft_inventory needs to open')
-        elif action == 'r':
-            # view item crafting recipe. make a list
-            # and new key:value pairs for each craftable item in items lists.
-            pass
-        elif action == 'q': # CLose inventory
-            print("\nInventory closed.\n")
-            time.wait(0.8)
-            return
-        else:
-            print("\nPlease enter either A, D, or I.\n")
-            return
+            else:
+                print("\nPlease enter either A, D, or I.\n")
+                return
 
 class Monster:
     ''' Simulate a monster that can fight the Player. '''
@@ -98,7 +104,7 @@ class Monster:
         self.extra_dmg = 2
 
     def prevent_retreat(self):
-        threshold = math.randint(1, 10)
+        threshold = random.randint(1, 10)
         if threshold <= 5:
             return True
         return False

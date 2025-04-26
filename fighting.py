@@ -1,44 +1,47 @@
-import main
+from main import player
 from game_things import *
 
 def battle(monster):
-    main.player.enter_battle()
+    player.enter_battle()
+    os.system('cls' if os.name == 'nt' else 'clear')
     print(f"\nYou encountered a {monster.name}!\n")
     print(f"\t\tEnemy: {monster.health}/{monster.max_health} HP")
 
-    while monster.health > 0 and main.player['health'] > 0:
+    while monster.health > 0 and player.health > 0:
         choice = input("\n[F] FIGHT, [I] USE ITEM, [R] RETREAT: ").strip().lower()
 
-        if choice == "f": # main.player attacks
-            damage = main.player.use_weapon()
+        if choice == "f": # player attacks
+            damage = player.use_weapon()
             print(f"You attack and deal {damage} damage!")
             monster.take_dmg(damage)
         elif choice == "i":
-            main.player.open_inventory()
+            player.open_inventory()
         elif choice == "r":
-            if monster.name in boss_monsters:
-                print(f"{monster.name}'s voice shakes the ground beneath your feet. You don't need to guess what it means; running away only means death.")
+            if monster.name in boss_monsters or monster.prevent_retreat():
+                print(f"{monster.name} gives off a warning sound. You don't need to guess what it means; running away only means death.")
             else:
-                if monster.prevent_retreat == True:
-                    print(f"{monster.name} tenses. You probably shouldn't run away right now.")
-                else:
-                    print("You fled the battle.")
-                    break
-            return
+                print("You fled the battle.")
+                return
         else:
-            print("Invalid choice. Try again.")
+            print("Please enter either F, I, or R.")
             continue
+
         if monster.is_defeated():
-            print(f"\nYou defeated the {monster.name}!")
+            print(f"\nYou defeated {monster.name}!")
             if monster.name in boss_monsters:
                 return
             print(f"It dropped: {monster.material}")
             return
         
         # Monster attacks
-        damage = monster.use_basic_attack()
-        main.player['health'] = max(0, main.player['health'] - damage)
-        print(f"You are at {main.player['health']}/{main.player['max_health']} HP.")
+        damage = monster.attack(3)
+        player.health = max(0, player.health - damage)
+        print(f"You are at {player.health}/{player.max_health} HP.")
 
-        if main.player.is_defeated():
+        if player.is_defeated():
             print("\nYou were defeated...")
+            print("Game over.")
+            exit()
+
+
+

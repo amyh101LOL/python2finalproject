@@ -10,7 +10,7 @@ def chapter(ch):
     print("\n", f"|{center_align}|", "\n")
 
 def encounter_monster(monster_list): # create lists of monsters for each section/chapter
-    choose_monster = math.randint(1, 10)
+    choose_monster = random.randint(1, 10)
     if 0 <= choose_monster <= 7:
         return monster_list[0] # return the monster object
     elif 8 <= choose_monster <= 10:
