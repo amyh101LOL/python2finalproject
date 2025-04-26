@@ -1,15 +1,16 @@
-import math, random
+import math, time, random
 
 class Player:
     ''' Simulate the Player and their stats. '''
     
-    def __init__(self, name, health, max_health, inventory):
+    def __init__(self, name, health, max_health):
         self.name = name
         self.health = health # Changing HP
         self.max_health = max_health # Max HP
         self.attack = 0
         self.defense = 0
-        self.inventory = inventory
+        self.inventory = {'Skilled Crafter' : 1, "Amber Duel": 1, 'Tinkle Berry' : 4}
+        self.materials = []
         self.in_battle = False
     
     def enter_battle(self):
@@ -21,12 +22,32 @@ class Player:
     def is_defeated(self):
         return self.health <= 0
     
+    def craft_inventory(self):
+        if len(self.materials) != 0:
+            print('Inventory (Materials)\n', '-', '\n- '.join([thing for thing in self.materials]), "\n")
+            #
+        else:
+            print("You have no materials in your inventory.\n")
+            return
+    
     def open_inventory(self):
-        print('\n-'.join([thing for thing in main.player.inventory]))
-        action = input("[E] Use Item, [C] Craft Item, [Q] Close Inventory").strip().lower()
+        print('Inventory (Items)\n', '-', '\n - '.join([f'{self.inventory[thing]} {thing}' for thing in self.inventory]), "\n")
+
+        while True:
+            try:
+                action = input("[E] Use Item, [R] View Item Crafting Recipe, [Q] Close Inventory: ").strip().lower()
+                break
+            except TypeError:
+                print("\nPlease enter a letter (E, R, Q).\n")
+                time.sleep(0.8)
+            except Exception:
+                print("\nPlease enter a valid input.\n")
+                time.sleep(0.8)
+
         if action == 'e':
-            item_name = input("Enter the name of the item you would like to use:\t").strip().title()
-            if item_name in items_movement.keys():
+            item_name = input("Enter the name of the item you would like to use: ").strip().title()
+            
+            if item_name in items_movement.keys() and self.in_battle == False:
                 print(f"You used {item_name}.")
                 
                 if "hp" in items_movement[item_name].keys():
@@ -44,9 +65,22 @@ class Player:
                 elif item_name == "Beetlelight Lantern" and self.in_battle == False:
                     print(items_movement['Beetlelight Lantern'])
                 return
-        if action == 'c' and self.in_battle == False:
-            pass # bring up crafting menu
-        if action == 'q':
+            elif item_name in items_fighting.keys() and self.in_battle == True:
+                # use battle item
+                print('user should be in battle')
+            elif item_name == "Skilled Crafter":
+                # use craft_inventory method
+                print('craft_inventory needs to open')
+        elif action == 'r':
+            # view item crafting recipe. make a list
+            # and new key:value pairs for each craftable item in items lists.
+            pass
+        elif action == 'q': # CLose inventory
+            print("\nInventory closed.\n")
+            time.wait(0.8)
+            return
+        else:
+            print("\nPlease enter either A, D, or I.\n")
             return
 
 class Monster:
@@ -61,7 +95,7 @@ class Monster:
         self.basic_dmg = basic_dmg # Amt of dmg dealt by basic
         self.special_atk = special_atk # Name of special attack
         self.special_dmg = special_dmg # Amt of dmg dealt by special
-        self.extra_dmg = 3
+        self.extra_dmg = 2
 
     def prevent_retreat(self):
         threshold = math.randint(1, 10)
@@ -93,16 +127,17 @@ class Boss(Monster):
         super().__init__(name, health, material, basic_atk, basic_dmg, special_atk, special_dmg)
         self.ultimate_atk = ultimate_atk
         self.ultimate_dmg = ultimate_dmg
+        self.extra_dmg = 3
     
 
-weapons = {"Amber Duel": {'weapon_type' : "Knight Sword", 'atk' : 8}, # 'location' : "Spawn"
-            "Dark-Dweller": {'weapon_type' : "Magic Sword", 'atk' : 18}, # 'location' : "The Lonely Forest"
-            "Felix 99":{'weapon_type' : "Wand", 'atk' : 15}, # 'location' : "The Lonely Forest"
-            "Espee De Fue": {'weapon_type' : "Magic Sword", 'atk' : 50}, # 'location' : "The Hardy Sea of Flying Fish"
-            "Exodus 1600": {'weapon_type' : "Wand", 'atk' : 50}, # 'location' : "The Hardy Sea of Flying Fish"
-            "Pulsing Wave": {'weapon_type' : "Wand", 'atk' : 60}, # 'location' : "The Hardy Sea of Flying Fish"
-            "Donta 2048": {'weapon_type' : "Wand", 'atk' : 65}, # 'location' : "The Mountain Bearing Shiny Teeth"
-            "Great Warrior's Valor": {'weapon_type' : "Knight Sword", 'atk' : 70}} # 'location' : "The Mountain Bearing Shiny Teeth"
+weapons = {"Amber Duel" : {'weapon_type' : "Knight Sword", 'atk' : 8}, # 'location' : "Spawn"
+            "Dark-Dweller" : {'weapon_type' : "Magic Sword", 'atk' : 18}, # 'location' : "The Lonely Forest"
+            "Felix 99" : {'weapon_type' : "Wand", 'atk' : 15}, # 'location' : "The Lonely Forest"
+            "Espee De Fue" : {'weapon_type' : "Magic Sword", 'atk' : 50}, # 'location' : "The Hardy Sea of Flying Fish"
+            "Exodus 1600" : {'weapon_type' : "Wand", 'atk' : 50}, # 'location' : "The Hardy Sea of Flying Fish"
+            "Pulsing Wave" : {'weapon_type' : "Wand", 'atk' : 60}, # 'location' : "The Hardy Sea of Flying Fish"
+            "Donta 2048" : {'weapon_type' : "Wand", 'atk' : 65}, # 'location' : "The Mountain Bearing Shiny Teeth"
+            "Great Warrior's Valor" : {'weapon_type' : "Knight Sword", 'atk' : 70}} # 'location' : "The Mountain Bearing Shiny Teeth"
 
 items_fighting = {'Bungle Berry': {'hp' : 7}, #  'location': 'The Lonely Forest'
         'Tinkle Berry' : {'hp' : 5}, # 'location': 'The Lonely Forest'
@@ -122,7 +157,7 @@ items_fighting = {'Bungle Berry': {'hp' : 7}, #  'location': 'The Lonely Forest'
         "Doctor Good’s Refined Serum" : {'hp' : 60, 'atk' : 30}, # 'location': 'The Mountain Bearing Shiny Teeth'
         'Chrono Vial' : {'def' : 30}, # 'location': 'The Hideout'
         'Chrono Core' : {'atk' : 25}, # 'location': 'The Hideout'
-        "Beast’s Final Hour" : {'hp' : 70, 'atk' : 90, 'def':50}} # 'location': 'The Hideout'
+        "Beast’s Final Hour" : {'hp' : 70, 'atk' : 90, 'def': 50}} # 'location': 'The Hideout'
 
 items_movement = {'Beetlelight Lantern' : "0% monster encounter chance for 8 moves.",
         'Unlit Torch' : {'spd' : 3, 'def' : 3, 'location': 'The Mountain Bearing Shiny Teeth'},
