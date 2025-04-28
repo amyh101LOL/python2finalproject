@@ -1,6 +1,8 @@
-import time, math, os, game_things, fighting
+import time, math, os
+from game_things import Player
+from fighting import *
 
-user = game_things.Player("", 80, 80, {'Skilled Crafter' : 1, "Amber Duel": 1, 'Tinkle Berry' : 4,})
+player = Player("", 80, 80)
 
 def chapter(ch):
     width = 50
@@ -8,7 +10,7 @@ def chapter(ch):
     print("\n", f"|{center_align}|", "\n")
 
 def encounter_monster(monster_list): # create lists of monsters for each section/chapter
-    choose_monster = math.randint(1, 10)
+    choose_monster = random.randint(1, 10)
     if 0 <= choose_monster <= 7:
         return monster_list[0] # return the monster object
     elif 8 <= choose_monster <= 10:
@@ -49,26 +51,29 @@ def moving_in_game(sections, section_boundaries, building_positions, screen_widt
         # Get user input to move
         try:
             move = input("Move ([A] left, [D] right), [I] inventory: ").strip().lower()
-        except TypeError:
-            print("Please enter either A, D, or I.")
+        except TypeError: # User entered a number
+            print("\nPlease enter a letter (A, D, I).\n")
+            time.sleep(0.8)
         except Exception:
-            print("Please enter a valid input.")
+            print("\nPlease enter a valid input.\n")
+            time.sleep(0.8)
 
 
         # FIX THIS LATER FOR SECTION BARRIERS
-        if move == 'a':  # Move left
+        if move == 'a':
             scroll_offset = (scroll_offset + 1) % screen_width
-            player_pos -= 1  # Move player left
+            player_pos -= 1 # Move player left
             os.system('cls' if os.name == 'nt' else 'clear')
-        elif move == 'd':  # Move right
+        elif move == 'd':
             scroll_offset = (scroll_offset - 1) % screen_width
-            player_pos += 1  # Move player right
+            player_pos += 1 # Move player right
             os.system('cls' if os.name == 'nt' else 'clear')
         elif move == 'i': # Opem inventory
-            user.open_inventory()
-        else:  # Quit the game
-            print("Please enter either A or D.")
-            continue  # Exit the game
+            print()
+            player.open_inventory()
+        else: # User didn't enter a valid choice
+            print("\nPlease enter either A, D, or I.\n")
+            continue # Exit the game
         
         
 
@@ -79,7 +84,7 @@ def moving_in_game(sections, section_boundaries, building_positions, screen_widt
                 if section != current_section:
                     current_section = section  # Update the current section
                     print(f"\nYou have entered {sections[section]}!\n")
-        
+
 
 
 
