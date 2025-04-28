@@ -173,8 +173,8 @@ items_movement = {'Beetlelight Lantern' : "0% monster encounter chance for 8 mov
 ch1_monsters = {'Goblin' : Monster('Goblin', 25, 'Scrap Cloth', 'Bonk', 5, 'Bash', 15),
                 'Drudead' : Monster('Drudead', 35, ['Dehydrated Shoots'], 'Tackle', 10, 'Body Slam', 25)}
 ch2_monsters = {'Fishkys' : Monster('Fishkys', 40, ['Glazed Scales', 'Translucent Drops'], 'Tail Whip', 15, 'Sky Plunge', 30),
-                'Zombat' : Monster('Zombat', 60, ['Echoing Shards', 'Gust'], 'Gust', 20, 'Sonic Boom', 45),}
-ch3_monsters = {'Toskic' : Monster('Toskic', 100, ['Tufts of Snow', 'Hornsweep'], 'Hornsweep', 18, 'Avalanche', 30),
+                'Zombat' : Monster('Zombat', 60, ['Echoing Shards'], 'Gust', 20, 'Sonic Boom', 45),}
+ch3_monsters = {'Toskic' : Monster('Toskic', 100, ['Tufts of Snow'], 'Hornsweep', 18, 'Avalanche', 30),
                 'Mammauth' : Monster('Mammauth', 120, ['Tufts of Snow', 'Broken Icicles'], 'Burrow', 20, 'Tectonic Rage', 42)}
 ch4_monsters = {'Skelerat' : Monster('Skelerat', 95, ['Spine Fragments'], 'Screech', 10, 'Ankle Bite', 20),
                 'Enhanced Drudead' : Monster('Enhanced Drudead', 200, ['Dehydrated Shoots'], 'Tackle', 30, 'Body Slam', 75)}
