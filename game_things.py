@@ -11,7 +11,7 @@ class Player:
         self.defense = 0
         self.inventory = {'Skilled Crafter' : 1, 'Tinkle Berry' : 4}
         self.materials = {}
-        self.weapons = {'Amber Duel' : Weapon('Amber Duel', 8, 0, 0)}
+        self.weapons = {'Amber Duel' : Weapon('Amber Duel', 8, 0, 0, 'None', 0, [0], ['None'])}
         self.in_battle = False
     
     def enter_battle(self):
@@ -87,7 +87,7 @@ class Player:
                 pass
             elif action == 'q': # CLose inventory
                 print("\nInventory closed.\n")
-                time.wait(0.8)
+                time.sleep(0.8)
                 return
             else:
                 print("\nPlease enter either A, D, or I.\n")

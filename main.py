@@ -1,5 +1,5 @@
 import time, math, os
-from game_things import Player
+from game_things import *
 from fighting import *
 
 player = Player("", 80, 80)
@@ -15,6 +15,9 @@ def encounter_monster(monster_list): # create lists of monsters for each section
         return monster_list[0] # return the monster object
     elif 8 <= choose_monster <= 10:
         return monster_list[1]
+
+def enter_location(loc_name):
+    pass # user is now in the location. change screen boundaries and width.
 
 def moving_in_game(sections, section_boundaries, building_positions, screen_width):
     player_pos = 0  # value changes to simulate player movement
@@ -52,7 +55,7 @@ def moving_in_game(sections, section_boundaries, building_positions, screen_widt
         try:
             move = input("Move ([A] left, [D] right), [I] inventory: ").strip().lower()
         except TypeError: # User entered a number
-            print("\nPlease enter a letter (A, D, I).\n")
+            print("\nPlease enter a valid letter.\n")
             time.sleep(0.8)
         except Exception:
             print("\nPlease enter a valid input.\n")
@@ -70,9 +73,12 @@ def moving_in_game(sections, section_boundaries, building_positions, screen_widt
             os.system('cls' if os.name == 'nt' else 'clear')
         elif move == 'i': # Opem inventory
             print()
-            player.open_inventory()
+            player.open_inventory(items_movement, items_fighting)
+        elif move == 'e' and player_actual_pos == building_pos:
+            print()
+            player.enter_location('Cottage in the Woods') # make classes for the locations
         else: # User didn't enter a valid choice
-            print("\nPlease enter either A, D, or I.\n")
+            print("\nPlease enter either a valid letter.\n")
             continue # Exit the game
         
         
