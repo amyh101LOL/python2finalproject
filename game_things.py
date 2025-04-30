@@ -10,15 +10,18 @@ class Player:
         self.attack = 0
         self.defense = 0
         self.inventory = {'Skilled Crafter' : 1, 'Tinkle Berry' : 4}
-        self.materials = []
-        self.weapons = ["Amber Duel"]
+        self.materials = {}
+        self.weapons = {'Amber Duel' : Weapon('Amber Duel', 8, 0, 0, 'None', 0, [0], ['None'])}
         self.in_battle = False
     
     def enter_battle(self):
         self.in_battle = True
+    
+    def add_weapon_to_inv(self, weapons, new_weapon):
+        self.weapons[new_weapon] = weapons[new_weapon]
 
-    def use_weapon(self):
-        return weapons[self.weapons]['atk']
+    def use_weapon(self, weapon_name):
+        return weapon_name['atk'] # return the atk value of the weapon the Player is using.
     
     def is_defeated(self):
         return self.health <= 0
@@ -31,7 +34,7 @@ class Player:
             print("You have no materials in your inventory.\n")
             return
     
-    def open_inventory(self):
+    def open_inventory(self, items_movement, items_fighting):
         while True:
             print('Inventory (Items)\n', '-', '\n - '.join([f'{self.inventory[thing]} {thing}' for thing in self.inventory]), "\n")
             
@@ -84,11 +87,43 @@ class Player:
                 pass
             elif action == 'q': # CLose inventory
                 print("\nInventory closed.\n")
-                time.wait(0.8)
+                time.sleep(0.8)
                 return
             else:
                 print("\nPlease enter either A, D, or I.\n")
                 return
+
+class Weapon:
+    ''' Simulate a weapon the player can use. '''
+    
+    def __init__(self, name, atk, dmg, upgrade_count, effect, lvl_up_value, lvl_up_mat_amt, lvl_up_materials):
+        self.name = name
+        self.atk = atk # atk dealt to enemy
+        self.dmg = dmg # atk dealt to player
+        self.upgrade_count = upgrade_count # how many times it can lvl up (int)
+        self.effect = effect # what stat lvling up affects (string)
+        self.lvl_up_value = lvl_up_value # change effect by this value (int)
+        self.lvl_up_mat_amt = lvl_up_mat_amt # mat amt needed to lvl up
+        self.lvl_up_materials = lvl_up_materials # list of mats required to lvl up weapon (list)
+    
+    def use_weapon(self):
+        return self.atk
+    
+    def lvl_up_weapon(self, player):
+        if self.upgrade_count > 0 and self.lvl_up_materials in player.materials:
+            self.upgrade_count -= 1
+            if self.effect == 'atk':
+                self.atk += self.lvl_up_value
+            elif self.effect == 'def':
+                player.defense += self.lvl_up_value
+            elif self.effect == 'hp':
+                player.health += self.lvl_up_value
+        elif self.upgrade_count == 0:
+            print("This weapon is already at max level.")
+        elif self.lvl_up_materials not in player.materials or self.lvl_up_mat_amt not in player.materials[self.lvl_up_materials]['amt']: # check this
+            print("You do not have enough materials to level up this weapon.\nRequired materials:", '-', '\n- '.join([mat for mat in self.lvl_up_materials]), "\n")
+            
+    
 
 class Monster:
     ''' Simulate a monster that can fight the Player. '''
@@ -135,16 +170,16 @@ class Boss(Monster):
         self.ultimate_atk = ultimate_atk
         self.ultimate_dmg = ultimate_dmg
         self.extra_dmg = 3
-    
 
-weapons = {"Amber Duel" : {'weapon_type' : "Knight Sword", 'atk' : 8}, # 'location' : "Spawn"
-            "Dark-Dweller" : {'weapon_type' : "Magic Sword", 'atk' : 18}, # 'location' : "The Lonely Forest"
-            "Felix 99" : {'weapon_type' : "Wand", 'atk' : 15}, # 'location' : "The Lonely Forest"
-            "Espee De Fue" : {'weapon_type' : "Magic Sword", 'atk' : 50}, # 'location' : "The Hardy Sea of Flying Fish"
-            "Exodus 1600" : {'weapon_type' : "Wand", 'atk' : 50}, # 'location' : "The Hardy Sea of Flying Fish"
-            "Pulsing Wave" : {'weapon_type' : "Wand", 'atk' : 60}, # 'location' : "The Hardy Sea of Flying Fish"
-            "Donta 2048" : {'weapon_type' : "Wand", 'atk' : 65}, # 'location' : "The Mountain Bearing Shiny Teeth"
-            "Great Warrior's Valor" : {'weapon_type' : "Knight Sword", 'atk' : 70}} # 'location' : "The Mountain Bearing Shiny Teeth"
+
+weapons = {'Amber Duel' : Weapon('Amber Duel', 8, 0, 0, 'None', 0, [0], ['None']), # 'location' : "Spawn"
+            "Dark-Dweller" : Weapon('Dark-Dweller', 18, 0.03, 6, 'atk', 2, [2], ['Dehydrated Shoots']), # 'location' : "The Lonely Forest"
+            "Felix 99" : Weapon('Felix 99', 15, 0, 0, 'None', 0, [0], ['None']), # 'location' : "The Lonely Forest"
+            "Espee De Fue" : Weapon('Espee De Fue', 50, 6, 3, 'atk', 5, [1, 7], ['Dehydrated Shoots', 'Spine Fragments']), # 'location' : "The Hardy Sea of Flying Fish"
+            "Exodus 1600" : Weapon('Exodus 1600', 50, 10, 0, 'None', 0, [0], ['None']), # 'location' : "The Hardy Sea of Flying Fish"
+            "Pulsing Wave" : Weapon('Pulsing Wave', 60, 0, 4, 'atk', 4, [10, 6], ['Glazed Scales', 'Echoing Shards']), # 'location' : "The Hardy Sea of Flying Fish"
+            "Donta 2048" : Weapon('Donta 2048', 65, 12, 5, 'atk', 4, [2, 1], ['Broken Icicles', 'Tufts of Snow']), # 'location' : "The Mountain Bearing Shiny Teeth"
+            "Great Warrior's Valor" : Weapon("Great Warrior's Valor", 70, 0, 2, 'atk', 10, [3, 5], ['Broken Icicles', 'Tufts of Snow'])} # 'location' : "The Mountain Bearing Shiny Teeth"
 
 items_fighting = {'Bungle Berry': {'hp' : 7}, #  'location': 'The Lonely Forest'
         'Tinkle Berry' : {'hp' : 5}, # 'location': 'The Lonely Forest'
