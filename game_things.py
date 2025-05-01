@@ -122,8 +122,6 @@ class Weapon:
             print("This weapon is already at max level.")
         elif self.lvl_up_materials not in player.materials or self.lvl_up_mat_amt not in player.materials[self.lvl_up_materials]['amt']: # check this
             print("You do not have enough materials to level up this weapon.\nRequired materials:", '-', '\n- '.join([mat for mat in self.lvl_up_materials]), "\n")
-            
-    
 
 class Monster:
     ''' Simulate a monster that can fight the Player. '''
@@ -171,6 +169,10 @@ class Boss(Monster):
         self.ultimate_dmg = ultimate_dmg
         self.extra_dmg = 3
 
+class Location:
+    def __init__(self, items, character):
+        self.items = items
+        self.character = character
 
 weapons = {'Amber Duel' : Weapon('Amber Duel', 8, 0, 0, 'None', 0, [0], ['None']), # 'location' : "Spawn"
             "Dark-Dweller" : Weapon('Dark-Dweller', 18, 0.03, 6, 'atk', 2, [2], ['Dehydrated Shoots']), # 'location' : "The Lonely Forest"
@@ -180,6 +182,15 @@ weapons = {'Amber Duel' : Weapon('Amber Duel', 8, 0, 0, 'None', 0, [0], ['None']
             "Pulsing Wave" : Weapon('Pulsing Wave', 60, 0, 4, 'atk', 4, [10, 6], ['Glazed Scales', 'Echoing Shards']), # 'location' : "The Hardy Sea of Flying Fish"
             "Donta 2048" : Weapon('Donta 2048', 65, 12, 5, 'atk', 4, [2, 1], ['Broken Icicles', 'Tufts of Snow']), # 'location' : "The Mountain Bearing Shiny Teeth"
             "Great Warrior's Valor" : Weapon("Great Warrior's Valor", 70, 0, 2, 'atk', 10, [3, 5], ['Broken Icicles', 'Tufts of Snow'])} # 'location' : "The Mountain Bearing Shiny Teeth"
+
+locations = {'Cottage in the Woods' : Location(['Tinkle Berry', 'Bungle Berry', 'Beetlelight Lantern'], 'Suspicious Mage'),
+            'Abandoned Campsite' : Location(['Tinkle Berry', 'Bungle Berry', 'Whispering Leaf', 'Felix 99'], 'None'),
+            'The Pond in the Sky' : Location(['Conch Horn', 'Chrono Vial'], 'Bubba Boo'),
+            'Cloud Nine' : Location(['Nonalcoholic Mead', 'Katzenjammer', 'Spiked Freshwater', 'Espee de Fue'], 'Forrest Sump'),
+            'Swirling Pool of Whirl' : Location(['Frozen Berry', 'Conch Horn'], 'Queen Mariana'),
+            'Cold Cavern' : Location(['Fur Coat', 'Frozen Berry', 'Unlit Torch', 'Tufts of Snow'], 'Doctor Good'),
+            'Mysterious Door' : Location(['None'], 'Frostfault'),
+            'Dusty Lab Cell' : Location(['Chrono Vial', 'Chrono Core', 'Adrenaline-Booster'], 'None')}
 
 items_fighting = {'Bungle Berry': {'hp' : 7}, #  'location': 'The Lonely Forest'
         'Tinkle Berry' : {'hp' : 5}, # 'location': 'The Lonely Forest'

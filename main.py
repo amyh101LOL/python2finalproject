@@ -16,8 +16,9 @@ def encounter_monster(monster_list): # create lists of monsters for each section
     elif 8 <= choose_monster <= 10:
         return monster_list[1]
 
-def enter_location(loc_name):
-    pass # user is now in the location. change screen boundaries and width.
+def enter_location(ch):
+    if ch == 'Cottage in the Woods':
+        print('worked')
 
 def moving_in_game(sections, section_boundaries, building_positions, screen_width):
     player_pos = 0  # value changes to simulate player movement
@@ -37,7 +38,7 @@ def moving_in_game(sections, section_boundaries, building_positions, screen_widt
         
         # Display building behind player if overlapped
         building_pos = building_positions[current_section]
-        screen[building_pos] = "#"
+        screen[building_pos] = "⾕"
         
         # Always place the player at the center of the screen
         screen[player_actual_pos] = '웃'
@@ -64,24 +65,24 @@ def moving_in_game(sections, section_boundaries, building_positions, screen_widt
 
         # FIX THIS LATER FOR SECTION BARRIERS
         if move == 'a':
-            scroll_offset = (scroll_offset + 1) % screen_width
-            player_pos -= 1 # Move player left
+            if player_pos > 0:
+                scroll_offset = (scroll_offset + 1) % screen_width
+                player_pos -= 1 # Move player left
             os.system('cls' if os.name == 'nt' else 'clear')
         elif move == 'd':
-            scroll_offset = (scroll_offset - 1) % screen_width
-            player_pos += 1 # Move player right
+            if player_pos < screen_width - 1:
+                scroll_offset = (scroll_offset - 1) % screen_width
+                player_pos += 1 # Move player right
             os.system('cls' if os.name == 'nt' else 'clear')
         elif move == 'i': # Opem inventory
             print()
             player.open_inventory(items_movement, items_fighting)
         elif move == 'e' and player_actual_pos == building_pos:
-            print()
-            player.enter_location('Cottage in the Woods') # make classes for the locations
+            print('player enters location (not implemented yet)')
+            player.enter_location(sections[current_section]) # make classes for the locations
         else: # User didn't enter a valid choice
             print("\nPlease enter either a valid letter.\n")
             continue # Exit the game
-        
-        
 
         # Check if the player has moved off-screen and should enter a new section
         for section, (start, end) in section_boundaries.items():
