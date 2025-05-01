@@ -16,9 +16,36 @@ def encounter_monster(monster_list): # create lists of monsters for each section
     elif 8 <= choose_monster <= 10:
         return monster_list[1]
 
+def leave_location():
+    print('\nReturning to the road...')
+    time.sleep(2)
+    os.system('cls' if os.name == 'nt' else 'clear')
+    time.sleep(0.5)
+
 def enter_location(ch):
-    if ch == 'Cottage in the Woods':
-        print('worked')
+    firstTime = locations[ch].firstTimeEntering
+    os.system('cls' if os.name == 'nt' else 'clear')
+    
+    match ch.lower():
+        case 'cottage in the woods': # ch 1
+            firstTime == False
+            print('You enter the homely cottage, disregarding the fact that you might be considered a home invader. Oh, well. It\'s not like they can do anything.')
+            # call sus mage function. print below is placeholder for now
+            time.sleep(2)
+            print('Nobody is home, anyway. You decide to take a couple things from the breakfast table under the window. The owner probably won\'t mind.')
+            time.sleep(2)
+            player.add_to_inventory(locations[ch].items, locations[ch].items_amt)
+            time.sleep(1.5)
+            leave_location()
+            return
+        case 'abandoned campsite': # ch 1
+            print('You come across a campsite. Since the outbreak, it\'s stayed unused. There are still some items from its last group of campers.')
+            time.sleep(2)
+            print("There's a big chance they won't care if you take a few things for the road.")
+            time.sleep(1.5)
+            return
+        case 'the pond in the sky':
+            pass
 
 def moving_in_game(sections, section_boundaries, building_positions, screen_width):
     player_pos = 0  # value changes to simulate player movement
@@ -62,7 +89,6 @@ def moving_in_game(sections, section_boundaries, building_positions, screen_widt
             print("\nPlease enter a valid input.\n")
             time.sleep(0.8)
 
-
         # FIX THIS LATER FOR SECTION BARRIERS
         if move == 'a':
             if player_pos > 0:
@@ -79,7 +105,7 @@ def moving_in_game(sections, section_boundaries, building_positions, screen_widt
             player.open_inventory(items_movement, items_fighting)
         elif move == 'e' and player_actual_pos == building_pos:
             print('player enters location (not implemented yet)')
-            player.enter_location(sections[current_section]) # make classes for the locations
+            enter_location(sections[current_section]) # make classes for the locations
         else: # User didn't enter a valid choice
             print("\nPlease enter either a valid letter.\n")
             continue # Exit the game
