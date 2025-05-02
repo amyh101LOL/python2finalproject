@@ -233,10 +233,13 @@ ch1_monsters = {'Goblin' : Monster('Goblin', 25, 'Scrap Cloth', 'Bonk', 5, 'Bash
 ch2_monsters = {'Fishkys' : Monster('Fishkys', 40, ['Glazed Scales', 'Translucent Drops'], 'Tail Whip', 15, 'Sky Plunge', 30),
                 'Zombat' : Monster('Zombat', 60, ['Echoing Shards'], 'Gust', 20, 'Sonic Boom', 45),}
 ch3_monsters = {'Toskic' : Monster('Toskic', 100, ['Tufts of Snow'], 'Hornsweep', 18, 'Avalanche', 30),
-                'Mammauth' : Monster('Mammauth', 120, ['Tufts of Snow', 'Broken Icicles'], 'Burrow', 20, 'Tectonic Rage', 42)}
+                'Mammaulth' : Monster('Mammaulth', 120, ['Tufts of Snow', 'Broken Icicles'], 'Burrow', 20, 'Tectonic Rage', 42)}
 ch4_monsters = {'Skelerat' : Monster('Skelerat', 95, ['Spine Fragments'], 'Screech', 10, 'Ankle Bite', 20),
                 'Enhanced Drudead' : Monster('Enhanced Drudead', 200, ['Dehydrated Shoots'], 'Tackle', 30, 'Body Slam', 75)}
-boss_monsters = {'Poisonorous' : Boss('Poisonorous', 70, ['Spine Fragments', 'Translucent Droplets'], 'Spikeball', 13, 'Drill Sting', 15, 'Noxious Infestation', 30),
-                 'Frostfault' : Boss('Frostfault', 280, None, 'Frostbite', 35, 'Shattering Verglas', 45, "Winter's Fury", 70),
-                 'Stage 1 Torricend' : Boss('Stage 1 Torricend', 700, None, 'Lunge', 40, 'Waste Pump', 80, 'Eroding Rumble', 110),
-                 'Stage 2 Torricend' : Boss('Stage 2 Torricend', 1800, None, 'Lockjaw', 70, 'Mortar Flush', 90, 'Ashes to Dust', 200)}
+all_monsters = [ch1_monsters, ch2_monsters, ch3_monsters, ch4_monsters]
+boss_monsters = {None : None,
+                'Poisonorous' : Boss('Poisonorous', 70, ['Spine Fragments', 'Translucent Droplets'], 'Spikeball', 13, 'Drill Sting', 15, 'Noxious Infestation', 30),
+                None : None} # ch 1 and 3 have no mini bosses
+special_boss_monsters = {'Frostfault' : Boss('Frostfault', 280, None, 'Frostbite', 35, 'Shattering Verglas', 45, "Winter's Fury", 70),
+                'Stage 1 Torricend' : Boss('Stage 1 Torricend', 700, None, 'Lunge', 40, 'Waste Pump', 80, 'Eroding Rumble', 110),
+                'Stage 2 Torricend' : Boss('Stage 2 Torricend', 1800, None, 'Lockjaw', 70, 'Mortar Flush', 90, 'Ashes to Dust', 200)}
