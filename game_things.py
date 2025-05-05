@@ -11,7 +11,7 @@ class Player:
         self.defense = 0
         self.inventory = {'Skilled Crafter' : 1, 'Tinkle Berry' : 4}
         self.materials = {}
-        self.weapons = {'Amber Duel' : Weapon('Amber Duel', 8, 0, 0, 'None', 0, [0], ['None'])}
+        self.weapons = {'Amber Duel' : Weapon('Amber Duel', 8, 0, 0, None, 0, [0], None)}
         self.in_battle = False
     
     def enter_battle(self):
@@ -25,6 +25,12 @@ class Player:
     
     def is_defeated(self):
         return self.health <= 0
+    
+    def add_to_inventory(self, new_items, amounts):
+        print()
+        for item in new_items:
+            self.inventory[item] = amounts[new_items.index(item)]
+        print('Inventory updated. Added items:\n', '-', '\n - '.join([f'{self.inventory[item]} {item}' for item in new_items]))
     
     def craft_inventory(self):
         if len(self.materials) != 0:
@@ -48,34 +54,38 @@ class Player:
                 time.sleep(0.8)
 
             if action == 'e':
-                item_name = input("Enter the name of the item you would like to use: ").strip().title()
-                
-                if item_name in items_movement.keys() and self.in_battle == False:
-                    print(f"You used {item_name}.")
+                while True:
+                    item_name = input("Enter the name of the item you would like to use ([Q] to quit): ").strip().lower()
                     
-                    if "hp" in items_movement[item_name].keys():
-                        if self.health + item_name['hp'] <= self.max_health:
-                            self.health += item_name['hp']
-                        elif self.health + item_name['hp'] > self.max_health:
-                            self.health = self.max_health
-                        print("HP increased to", self.health)
-                    if "atk" in items_movement[item_name].keys():
-                        self.attack += item_name['atk']
-                        print("ATK increased to", self.attack)
-                    if "def" in items_movement[item_name].keys():
-                        self.defense += item_name['def']
-                        print("DEF increased to", self.defense)
-                    elif item_name == "Beetlelight Lantern" and self.in_battle == False:
-                        print(items_movement['Beetlelight Lantern'])
-                    return
-                elif item_name in items_fighting.keys() and self.in_battle == True:
-                    # use battle item
-                    print('user should be in battle')
-                elif item_name == "Skilled Crafter":
-                    # use craft_inventory method
-                    print('craft_inventory needs to open')
-                else:
-                    print('\nItem cannot be used right now.\n')
+                    if item_name == 'q':
+                        break
+                    
+                    if item_name in items_movement.keys() and self.in_battle == False:
+                        print(f"You used {item_name}.")
+                        
+                        if "hp" in items_movement[item_name].keys():
+                            if self.health + item_name['hp'] <= self.max_health:
+                                self.health += item_name['hp']
+                            elif self.health + item_name['hp'] > self.max_health:
+                                self.health = self.max_health
+                            print("HP increased to", self.health)
+                        if "atk" in items_movement[item_name].keys():
+                            self.attack += item_name['atk']
+                            print("ATK increased to", self.attack)
+                        if "def" in items_movement[item_name].keys():
+                            self.defense += item_name['def']
+                            print("DEF increased to", self.defense)
+                        elif item_name == "Beetlelight Lantern" and self.in_battle == False:
+                            print(items_movement['Beetlelight Lantern'])
+                        break
+                    elif item_name in items_fighting.keys() and self.in_battle == True:
+                        # use battle item
+                        print('user should be in battle CODE THIS')
+                    elif item_name == "skilled crafter":
+                        # use craft_inventory method
+                        print('craft_inventory needs to open CODE THIS')
+                    else:
+                        print('\nItem cannot be used right now.\n')
             elif action == 'r':
                 # view item crafting recipe. make a list
                 # and new key:value pairs for each craftable item in items lists.
@@ -170,27 +180,29 @@ class Boss(Monster):
         self.extra_dmg = 3
 
 class Location:
-    def __init__(self, items, character):
+    def __init__(self, items, items_amt, character):
         self.items = items
+        self.items_amt = items_amt
         self.character = character
+        self.firstTimeEntering = True
 
-weapons = {'Amber Duel' : Weapon('Amber Duel', 8, 0, 0, 'None', 0, [0], ['None']), # 'location' : "Spawn"
+weapons = {'Amber Duel' : Weapon('Amber Duel', 8, 0, 0, None, 0, [0], None), # 'location' : "Spawn"
             "Dark-Dweller" : Weapon('Dark-Dweller', 18, 0.03, 6, 'atk', 2, [2], ['Dehydrated Shoots']), # 'location' : "The Lonely Forest"
-            "Felix 99" : Weapon('Felix 99', 15, 0, 0, 'None', 0, [0], ['None']), # 'location' : "The Lonely Forest"
+            "Felix 99" : Weapon('Felix 99', 15, 0, 0, None, 0, [0], None), # 'location' : "The Lonely Forest"
             "Espee De Fue" : Weapon('Espee De Fue', 50, 6, 3, 'atk', 5, [1, 7], ['Dehydrated Shoots', 'Spine Fragments']), # 'location' : "The Hardy Sea of Flying Fish"
-            "Exodus 1600" : Weapon('Exodus 1600', 50, 10, 0, 'None', 0, [0], ['None']), # 'location' : "The Hardy Sea of Flying Fish"
+            "Exodus 1600" : Weapon('Exodus 1600', 50, 10, 0, None, 0, [0], None), # 'location' : "The Hardy Sea of Flying Fish"
             "Pulsing Wave" : Weapon('Pulsing Wave', 60, 0, 4, 'atk', 4, [10, 6], ['Glazed Scales', 'Echoing Shards']), # 'location' : "The Hardy Sea of Flying Fish"
             "Donta 2048" : Weapon('Donta 2048', 65, 12, 5, 'atk', 4, [2, 1], ['Broken Icicles', 'Tufts of Snow']), # 'location' : "The Mountain Bearing Shiny Teeth"
             "Great Warrior's Valor" : Weapon("Great Warrior's Valor", 70, 0, 2, 'atk', 10, [3, 5], ['Broken Icicles', 'Tufts of Snow'])} # 'location' : "The Mountain Bearing Shiny Teeth"
 
-locations = {'Cottage in the Woods' : Location(['Tinkle Berry', 'Bungle Berry', 'Beetlelight Lantern'], 'Suspicious Mage'),
-            'Abandoned Campsite' : Location(['Tinkle Berry', 'Bungle Berry', 'Whispering Leaf', 'Felix 99'], 'None'),
-            'The Pond in the Sky' : Location(['Conch Horn', 'Chrono Vial'], 'Bubba Boo'),
-            'Cloud Nine' : Location(['Nonalcoholic Mead', 'Katzenjammer', 'Spiked Freshwater', 'Espee de Fue'], 'Forrest Sump'),
-            'Swirling Pool of Whirl' : Location(['Frozen Berry', 'Conch Horn'], 'Queen Mariana'),
-            'Cold Cavern' : Location(['Fur Coat', 'Frozen Berry', 'Unlit Torch', 'Tufts of Snow'], 'Doctor Good'),
-            'Mysterious Door' : Location(['None'], 'Frostfault'),
-            'Dusty Lab Cell' : Location(['Chrono Vial', 'Chrono Core', 'Adrenaline-Booster'], 'None')}
+locations = {'Cottage in the Woods' : Location(['Tinkle Berry', 'Bungle Berry', 'Beetlelight Lantern'], [7, 8, 1], 'Suspicious Mage'),
+            'Abandoned Campsite' : Location(['Tinkle Berry', 'Bungle Berry', 'Whispering Leaf', 'Felix 99'], [12, 14, 2, 1], None),
+            'The Pond in the Sky' : Location(['Conch Horn', 'Chrono Vial'], [1, 1], 'Bubba Boo'),
+            'Cloud Nine' : Location(['Nonalcoholic Mead', 'Katzenjammer', 'Spiked Freshwater', 'Espee de Fue'], [1, 2, 1, 1], 'Forrest Sump'),
+            'Swirling Pool of Whirl' : Location(['Frozen Berry', 'Conch Horn'], [16, 1], 'Queen Mariana'),
+            'Cold Cavern' : Location(['Fur Coat', 'Frozen Berry', 'Unlit Torch', 'Tufts of Snow'], [1, 7, 1, 4], 'Doctor Good'),
+            'Mysterious Door' : Location(None, None, 'Frostfault'),
+            'Dusty Lab Cell' : Location(['Chrono Vial', 'Chrono Core', 'Adrenaline-Booster'], [1, 1, 1], None)}
 
 items_fighting = {'Bungle Berry': {'hp' : 7}, #  'location': 'The Lonely Forest'
         'Tinkle Berry' : {'hp' : 5}, # 'location': 'The Lonely Forest'
@@ -221,10 +233,13 @@ ch1_monsters = {'Goblin' : Monster('Goblin', 25, 'Scrap Cloth', 'Bonk', 5, 'Bash
 ch2_monsters = {'Fishkys' : Monster('Fishkys', 40, ['Glazed Scales', 'Translucent Drops'], 'Tail Whip', 15, 'Sky Plunge', 30),
                 'Zombat' : Monster('Zombat', 60, ['Echoing Shards'], 'Gust', 20, 'Sonic Boom', 45),}
 ch3_monsters = {'Toskic' : Monster('Toskic', 100, ['Tufts of Snow'], 'Hornsweep', 18, 'Avalanche', 30),
-                'Mammauth' : Monster('Mammauth', 120, ['Tufts of Snow', 'Broken Icicles'], 'Burrow', 20, 'Tectonic Rage', 42)}
+                'Mammaulth' : Monster('Mammaulth', 120, ['Tufts of Snow', 'Broken Icicles'], 'Burrow', 20, 'Tectonic Rage', 42)}
 ch4_monsters = {'Skelerat' : Monster('Skelerat', 95, ['Spine Fragments'], 'Screech', 10, 'Ankle Bite', 20),
                 'Enhanced Drudead' : Monster('Enhanced Drudead', 200, ['Dehydrated Shoots'], 'Tackle', 30, 'Body Slam', 75)}
-boss_monsters = {'Poisonorous' : Boss('Poisonorous', 70, ['Spine Fragments', 'Translucent Droplets'], 'Spikeball', 13, 'Drill Sting', 15, 'Noxious Infestation', 30),
-                 'Frostfault' : Boss('Frostfault', 280, ['None'], 'Frostbite', 35, 'Shattering Verglas', 45, "Winter's Fury", 70),
-                 'Stage 1 Torricend' : Boss('Stage 1 Torricend', 700, ['None'], 'Lunge', 40, 'Waste Pump', 80, 'Eroding Rumble', 110),
-                 'Stage 2 Torricend' : Boss('Stage 2 Torricend', 1800, ['None'], 'Lockjaw', 70, 'Mortar Flush', 90, 'Ashes to Dust', 200)}
+all_monsters = [ch1_monsters, ch2_monsters, ch3_monsters, ch4_monsters]
+boss_monsters = {None : None,
+                'Poisonorous' : Boss('Poisonorous', 70, ['Spine Fragments', 'Translucent Droplets'], 'Spikeball', 13, 'Drill Sting', 15, 'Noxious Infestation', 30),
+                None : None} # ch 1 and 3 have no mini bosses
+special_boss_monsters = {'Frostfault' : Boss('Frostfault', 280, None, 'Frostbite', 35, 'Shattering Verglas', 45, "Winter's Fury", 70),
+                'Stage 1 Torricend' : Boss('Stage 1 Torricend', 700, None, 'Lunge', 40, 'Waste Pump', 80, 'Eroding Rumble', 110),
+                'Stage 2 Torricend' : Boss('Stage 2 Torricend', 1800, None, 'Lockjaw', 70, 'Mortar Flush', 90, 'Ashes to Dust', 200)}

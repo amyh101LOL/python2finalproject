@@ -9,18 +9,51 @@ def chapter(ch):
     center_align = "{:^{}}".format(ch.upper(), width)
     print("\n", f"|{center_align}|", "\n")
 
-def encounter_monster(monster_list): # create lists of monsters for each section/chapter
+def encounter_monster(ch, monster_list, monster_boss): # create lists of monsters for each section/chapter
     choose_monster = random.randint(1, 10)
-    if 0 <= choose_monster <= 7:
-        return monster_list[0] # return the monster object
-    elif 8 <= choose_monster <= 10:
-        return monster_list[1]
+    
+    if monster_boss == None:
+        return monster_list[0] if 1 <= choose_monster <= 6 else monster_list[1]
+    else:
+        if 1 <= choose_monster <= 5:
+            return monster_list[0]
+        elif 6 <= choose_monster <= 8:
+            return monster_list[1]
+        else:
+            return monster_boss[ch]
+
+def leave_location():
+    print('\nReturning to the road...')
+    time.sleep(2)
+    os.system('cls' if os.name == 'nt' else 'clear')
+    time.sleep(0.5)
 
 def enter_location(ch):
-    if ch == 'Cottage in the Woods':
-        print('worked')
+    firstTime = locations[ch].firstTimeEntering
+    os.system('cls' if os.name == 'nt' else 'clear')
+    
+    match ch.lower():
+        case 'cottage in the woods': # ch 1
+            firstTime == False
+            print('You enter the homely cottage, disregarding the fact that you might be considered a home invader. Oh, well. It\'s not like they can do anything.')
+            # call sus mage function. print below is placeholder for now
+            time.sleep(2)
+            print('Nobody is home, anyway. You decide to take a couple things from the breakfast table under the window. The owner probably won\'t mind.')
+            time.sleep(2)
+            player.add_to_inventory(locations[ch].items, locations[ch].items_amt)
+            time.sleep(1.5)
+            leave_location()
+            return
+        case 'abandoned campsite': # ch 1
+            print('You come across a campsite. Since the outbreak, it\'s stayed unused. There are still some items from its last group of campers.')
+            time.sleep(2)
+            print("There's a big chance they won't care if you take a few things for the road.")
+            time.sleep(1.5)
+            return
+        case 'the pond in the sky': # ch 2
+            pass
 
-def moving_in_game(sections, section_boundaries, building_positions, screen_width):
+def moving_in_game(ch, sections, section_boundaries, building_positions, screen_width):
     player_pos = 0  # value changes to simulate player movement
     scroll_offset = 0  # initial scroll offset (simulates movement)
 
@@ -51,6 +84,11 @@ def moving_in_game(sections, section_boundaries, building_positions, screen_widt
         
         if player_actual_pos == building_pos:
             print('[E] to interact')
+        else:
+            encounter_chance = random.randint(1, 10)
+            if encounter_chance >= 7:
+                enemy = encounter_monster(ch, all_monsters[ch], boss_monsters[list(boss_monsters.keys())[ch]])
+                battle(enemy)
 
         # Get user input to move
         try:
@@ -61,7 +99,6 @@ def moving_in_game(sections, section_boundaries, building_positions, screen_widt
         except Exception:
             print("\nPlease enter a valid input.\n")
             time.sleep(0.8)
-
 
         # FIX THIS LATER FOR SECTION BARRIERS
         if move == 'a':
@@ -79,7 +116,7 @@ def moving_in_game(sections, section_boundaries, building_positions, screen_widt
             player.open_inventory(items_movement, items_fighting)
         elif move == 'e' and player_actual_pos == building_pos:
             print('player enters location (not implemented yet)')
-            player.enter_location(sections[current_section]) # make classes for the locations
+            enter_location(sections[current_section]) # make classes for the locations
         else: # User didn't enter a valid choice
             print("\nPlease enter either a valid letter.\n")
             continue # Exit the game
@@ -168,7 +205,8 @@ sections1 = {1: "Cottage in the Woods",
 sections1_boundaries = {1: (0,9),
                         2: (10, 19)}
 building_pos1 = {1: 4, 2: 8}
-moving_in_game(sections1, sections1_boundaries, building_pos1, 20)
+chapter_index = 0
+moving_in_game(chapter_index, sections1, sections1_boundaries, building_pos1, 20)
 
 '''chapter("2: The Hardy Sea of Flying Fish")
 
