@@ -236,7 +236,7 @@ ch3_monsters = {'Toskic' : Monster('Toskic', 100, ['Tufts of Snow'], 'Hornsweep'
                 'Mammaulth' : Monster('Mammaulth', 120, ['Tufts of Snow', 'Broken Icicles'], 'Burrow', 20, 'Tectonic Rage', 42)}
 ch4_monsters = {'Skelerat' : Monster('Skelerat', 95, ['Spine Fragments'], 'Screech', 10, 'Ankle Bite', 20),
                 'Enhanced Drudead' : Monster('Enhanced Drudead', 200, ['Dehydrated Shoots'], 'Tackle', 30, 'Body Slam', 75)}
-all_monsters = [ch1_monsters, ch2_monsters, ch3_monsters, ch4_monsters]
+all_monsters = [ch1_monsters, ch2_monsters, ch3_monsters, ch4_monsters] # list of dictionaries
 boss_monsters = {None : None,
                 'Poisonorous' : Boss('Poisonorous', 70, ['Spine Fragments', 'Translucent Droplets'], 'Spikeball', 13, 'Drill Sting', 15, 'Noxious Infestation', 30),
                 None : None} # ch 1 and 3 have no mini bosses
