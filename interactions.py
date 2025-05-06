@@ -77,14 +77,33 @@ def stone_tablet():
     time.sleep(1)
     print("There are four other tablets laying around. Maybe if you sort them in the correct position...\n")
 
-#didn't finish yet
-for x in range(1, 11):
-    tablets = {random.randint(0,10) for x in range(1, 6)}
-    print(tablets)
+    #idek what to do with this tbh
+    tablets = [] 
+    for x in range(1, 6):
+        tablet = {random.randrange(0,10) for x in range(1, 6)}
+        tablets.append(tablet)
+        print(sum(tablet))
+
+
 
 
 def frostfault_circle():
     """ Player must put them in order to awaken Frostfault. Mini boss battle with Frostfault. 
     Kill Frostfault to forcefully take the key to the Mysterious Door, or spare him, 
     retrieve the key, and Player will receive Beast’s Final Hour."""
-    pass
+
+
+    letter_code_points = {random.randrange(945, 970) for x in range(1, 6)}
+
+    letters = [chr(x) for x in letter_code_points]
+    sorted_letters = sorted(letters)
+
+    numbers = ('1', '2', '3', '4', '5')
+    print(" ".join(numbers))
+    print(" ".join(letters))
+    sequence = input("You can change the sequence by typing the numbers in your desired order:")
+    sequence.strip(" ")
+    print(sequence)
+    print()
+    print(" ".join(sorted_letters))
+
