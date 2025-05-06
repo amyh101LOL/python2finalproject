@@ -1,6 +1,6 @@
 import time, math, os
 from game_things import *
-from fighting import *
+import fighting
 
 player = Player("", 80, 80)
 
@@ -13,12 +13,12 @@ def encounter_monster(ch, monster_list, monster_boss): # create lists of monster
     choose_monster = random.randint(1, 10)
     
     if monster_boss == None:
-        return monster_list[0] if 1 <= choose_monster <= 6 else monster_list[1]
+        return list(monster_list.keys())[0] if 1 <= choose_monster <= 6 else list(monster_list.keys())[1]
     else:
         if 1 <= choose_monster <= 5:
-            return monster_list[0]
+            return monster_list[ch].keys()[0]
         elif 6 <= choose_monster <= 8:
-            return monster_list[1]
+            return monster_list[ch].keys()[1]
         else:
             return monster_boss[ch]
 
@@ -195,7 +195,7 @@ time.sleep(0.8)
 '''
 
 
-print('prologue')
+print('\nFROM DEVS: Use VSCode\'s terminal for a better experience.')
 chapter("1: The Lonely Forest")
 time.sleep(2)
 
