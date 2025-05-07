@@ -92,8 +92,10 @@ def frostfault_circle():
     Kill Frostfault to forcefully take the key to the Mysterious Door, or spare him, 
     retrieve the key, and Player will receive Beast’s Final Hour."""
 
-
-    letter_code_points = {random.randrange(945, 970) for x in range(1, 6)}
+    while True:
+        letter_code_points = {random.randrange(945, 970) for x in range(1, 6)}
+        if len(letter_code_points) == 5:
+            break
 
     letters = [chr(x) for x in letter_code_points]
     sorted_letters = sorted(letters)
@@ -101,9 +103,33 @@ def frostfault_circle():
     numbers = ('1', '2', '3', '4', '5')
     print(" ".join(numbers))
     print(" ".join(letters))
-    sequence = input("You can change the sequence by typing the numbers in your desired order:")
-    sequence.strip(" ")
-    print(sequence)
     print()
     print(" ".join(sorted_letters))
+
+    while True:
+        sequence = input("\nYou can change the sequence by typing the numbers in your desired order:")
+        sequence_set = set()
+        for x in sequence:
+             if x.isdigit():
+                 if int(x) in range(1, 6):
+                     sequence_set.add(x)
+
+        print(f"This is sequence_set {sequence_set}")
+        if len(sequence_set) != len(letters):
+            print("Enter all the numbers in the sequence(1-5)")
+        else:
+            break
+
+    
+    print()
+    sequence_letters = [chr(ord(letters[int(x)-1])) for x in sequence_set]
+    print(sequence_letters)
+    if sequence_letters == sorted_letters:
+        print("YOU WIN HOMIEEEEEEE")
+    else:
+        print("Not this time")
+    print("="*50)
+
+while True:
+    frostfault_circle()
 
