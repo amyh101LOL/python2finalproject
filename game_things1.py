@@ -68,6 +68,12 @@ class Player:
             self.inventory[item] = amounts[new_items.index(item)]
         print('Inventory updated. Added items:\n', '-', '\n - '.join([f'{self.inventory[item]} {item}' for item in new_items]))
     
+    def remove_from_inventory(self, used_items, amounts):
+        for item in used_items:
+            self.inventory[item][amounts[used_items.index(item)]] -= 1
+            if self.inventory[item][amounts[used_items.index(item)]] == 0:
+                del self.inventory[item][amounts[used_items.index(item)]]
+    
     def craft_inventory(self):
         if len(self.materials) != 0:
             print('Inventory (Materials)\n', '-', '\n- '.join([thing for thing in self.materials]), "\n")
@@ -81,7 +87,8 @@ class Player:
             print('Inventory (Items)\n', '-', '\n - '.join([f'{self.inventory[thing]} {thing}' for thing in self.inventory]), "\n")
             
             try:
-                action = input("[E] Use Item, [R] View Craft Recipes, [W] View Weapons, [Q] Close Inventory: ").strip().lower()
+                if self.in_battle: action = input("[E] Use Item, [Q] Close Inventory: ").strip().lower()
+                else: action = input("[E] Use Item, [R] View Craft Recipes, [W] View Weapons, [Q] Close Inventory: ").strip().lower()
             except TypeError:
                 print("\nPlease enter a letter (E, R, W, Q).\n")
                 time.sleep(0.8)
@@ -91,33 +98,48 @@ class Player:
 
             if action == 'e':
                 while True:
-                    item_name = input("Enter the name of the item you would like to use ([Q] to quit): ").strip().lower()
+                    item_name = input("Enter the name of the item you would like to use ([Q] to quit): ").strip().title()
                     
-                    if item_name == 'q':
+                    if item_name == 'Q':
                         break
                     
                     if item_name in items_movement.keys() and self.in_battle == False:
                         print(f"You used {item_name}.")
                         
                         if "hp" in items_movement[item_name].keys():
-                            if self.health + item_name['hp'] <= self.max_health:
-                                self.health += item_name['hp']
-                            elif self.health + item_name['hp'] > self.max_health:
+                            if self.health + items_movement[item_name]['hp'] <= self.max_health:
+                                self.health += items_movement[item_name]['hp']
+                            elif self.health + items_movement[item_name]['hp'] > self.max_health:
                                 self.health = self.max_health
                             print("HP increased to", self.health)
                         if "atk" in items_movement[item_name].keys():
-                            self.attack += item_name['atk']
+                            self.attack += items_movement[item_name]['atk']
                             print("ATK increased to", self.attack)
                         if "def" in items_movement[item_name].keys():
-                            self.defense += item_name['def']
+                            self.defense += items_movement[item_name]['def']
                             print("DEF increased to", self.defense)
-                        elif item_name == "Beetlelight Lantern" and self.in_battle == False:
+                        elif item_name.lower() == "beetlelight lantern" and self.in_battle == False:
                             print(items_movement['Beetlelight Lantern'])
+                        
+                        self.remove_from_inventory(item_name, 1) # DEBUG THIS
+                        
                         break
-                    elif item_name in items_fighting.keys() and self.in_battle == True:
+                    elif item_name.title() in items_fighting.keys() and self.in_battle == True:
                         # use battle item
+                        if "hp" in items_fighting[item_name].keys():
+                            if self.health + items_fighting[item_name]['hp'] <= self.max_health:
+                                self.health += items_fighting[item_name]['hp']
+                            elif self.health + items_fighting[item_name]['hp'] > self.max_health:
+                                self.health = self.max_health
+                            print("HP increased to", self.health)
+                        if "atk" in items_fighting[item_name].keys():
+                            self.attack += items_fighting[item_name]['atk']
+                            print("ATK increased to", self.attack)
+                        if "def" in items_fighting[item_name].keys():
+                            self.defense += items_fighting[item_name]['def']
+                            print("DEF increased to", self.defense)
                         print('user should be in battle CODE THIS')
-                    elif item_name == "skilled crafter":
+                    elif item_name.lower() == "skilled crafter":
                         # use craft_inventory method
                         print('craft_inventory needs to open CODE THIS')
                     else:

@@ -9,7 +9,7 @@ def battle(player, monster):
     print(f"\t\tEnemy: {monster.health}/{monster.max_health} HP")
 
     while monster.health > 0 and player.health > 0:
-        choice = input("\n[F] FIGHT, [I] USE ITEM, [R] RETREAT: ").strip().lower()
+        choice = input("\n[F] FIGHT, [I] OPEN INVENTORY, [R] RETREAT: ").strip().lower()
 
         if choice == "f": # player attacks
             damage = player.use_weapon(player.equipped_weapon)
@@ -17,12 +17,14 @@ def battle(player, monster):
             monster.take_dmg(damage)
         elif choice == "i":
             player.open_inventory(items_movement, items_fighting)
+            continue
         elif choice == "r":
             if monster.name in boss_monsters or monster.prevent_retreat():
                 print(f"{monster.name} gives off a warning sound. You don't need to guess what it means; running away only means death.")
             else:
                 print("You fled the battle.")
                 return
+            continue
         else:
             print("Please enter either F, I, or R.")
             continue

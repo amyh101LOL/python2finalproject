@@ -20,12 +20,12 @@ class Game:
                     2: "Abandoned Campsite"
                 },
                 'boundaries': {
-                    1: (0, 9),
-                    2: (10, 19)
+                    1: (0, 18),
+                    2: (19, 36)
                 },
                 'building_pos': {
-                    1: 4,
-                    2: 8
+                    1: 10,
+                    2: 23
                 },
                 'monsters': {
                     'Goblin': Monster('Goblin', 25, 'Scrap Cloth', 'Bonk', 5, 'Bash', 15),
@@ -59,14 +59,14 @@ class Game:
             print('You enter the homely cottage...')
             time.sleep(2)
             print('Nobody is home. You take some items from the table.')
-            time.sleep(2)
+            time.sleep(1.5)
             self.player.add_to_inventory(location.items, location.items_amt)
             time.sleep(1.5)
             self.leave_location()
         elif location_name == 'Abandoned Campsite':
             print('You come across an abandoned campsite...')
             time.sleep(2)
-            print("There are some usable items left behind.")
+            print("There are some useful items left behind.")
             time.sleep(1.5)
             self.player.add_to_inventory(location.items, location.items_amt)
             time.sleep(1.5)
@@ -84,16 +84,42 @@ class Game:
         current_section = 1
         
         while True:
+            # Check for section change
+            for section, (start, end) in chapter['boundaries'].items():
+                if start <= player_pos <= end and section != current_section:
+                    current_section = section
+                    print(f"\nEntered {chapter['sections'][section]}!\n")
+                    time.sleep(0.5)
             
             # Display current section info
             print(chapter['sections'][current_section])
             
-            # Simple position display
-            position_display = [' '] * 20
+            # Get current section boundaries
+            section_start, section_end = chapter['boundaries'][current_section]
+            section_len = section_end - section_start + 1
+
+            # Display range is always 20 chars
+            position_display = [' '] * section_len
+
+            # Place building and player if they're within the current view
             building_pos = chapter['building_pos'][current_section]
-            position_display[building_pos] = "⾕"
-            position_display[player_pos] = '웃'
+            
+            # Build the location
+            if section_start <= building_pos <= section_end:
+                position_display[building_pos - section_start] = "⾕"
+            
+            # Build the player
+            if section_start <= building_pos <= section_end:
+                player_index = player_pos - section_start
+                if 0 <= player_index < section_len:
+                    position_display[player_index] = '웃'
+                else:
+                    print(f"out of bounds: index {player_pos}")
+            else:
+                print(f"error: player_pos oob")
+
             print(''.join(position_display))
+
             
             # Interaction prompts
             if player_pos == building_pos:
@@ -101,7 +127,7 @@ class Game:
             
             # Movement input
             try:
-                move = input("Move ([A] left, [D] right, [I] inventory), [Q] quit game: ").strip().lower()
+                move = input("Move ([A] left, [D] right), [I] inventory, [Q] quit game: ").strip().lower()
             except TypeError:
                 print("\nPlease enter a valid letter.\n")
                 time.sleep(0.8)
@@ -119,15 +145,15 @@ class Game:
             elif move == 'a':
                 if player_pos > 0: #chapter['boundaries'][current_section][0] or player_pos != 0:
                     player_pos -= 1
-                '''else:
+                else:
                     print("Can't go further left!")
-                    time.sleep(0.5)'''
+                    time.sleep(0.5)
             elif move == 'd': # fix entering new section (wont send player back to index 0)
-                if player_pos < chapter['boundaries'][current_section][1] or player_pos != 19:
+                if player_pos < self.chapters[chapter_num]['boundaries'][2][1]: #chapter['boundaries'][current_section][1]: #or player_pos != 19:
                     player_pos += 1
-                '''else:
+                else:
                     print("Can't go further right!")
-                    time.sleep(0.5)'''
+                    time.sleep(0.5)
             elif move == 'i':
                 print()
                 self.player.open_inventory(items_movement, items_fighting)
@@ -140,19 +166,13 @@ class Game:
             
             self.clear_screen()
             
-            # Random encounters (when not at building)
-            '''if player_pos != building_pos and random.randint(1, 50) >= 42:
+            # Random monster encounters (when not at building)
+            if player_pos != building_pos and random.randint(1, 50) >= 42:
                 monster = random.choice(list(chapter['monsters'].values()))
                 battle(self.player, monster)
                 if self.player.health <= 0:
-                    return'''
+                    return
 
-            # Check for section change
-            for section, (start, end) in chapter['boundaries'].items():
-                if start <= player_pos <= end and section != current_section:
-                    current_section = section
-                    print(f"\nEntered {chapter['sections'][section]}!\n")
-                    time.sleep(0.5)
 
     def start(self):
         print('\nFROM DEVS: Use a VSCode terminal for a better experience.')
