@@ -3,8 +3,10 @@ import time
 import random
 import os
 from turtle import position
-from game_things1 import Player, Location, Weapon, Monster, Boss,  items_movement, items_fighting
+from ch2 import helpedGale, ignoredGale, runCh2Intro
+from game_things1 import Player, Location, Weapon, Monster, Boss,  items_movement, items_fighting, ch1_monsters, ch2_monsters, ch3_monsters, ch4_monsters
 from fighting1 import battle
+from prologue import runPrologue
 
 class Game:
     def __init__(self):
@@ -27,16 +29,75 @@ class Game:
                     1: 10,
                     2: 23
                 },
-                'monsters': {
-                    'Goblin': Monster('Goblin', 25, 'Scrap Cloth', 'Bonk', 5, 'Bash', 15),
-                    'Drudead': Monster('Drudead', 35, ['Dehydrated Shoots'], 'Tackle', 10, 'Body Slam', 25)
-                },
+                'monsters': ch1_monsters,
                 'locations': {
                     'Cottage in the Woods': Location(['Tinkle Berry', 'Bungle Berry', 'Beetlelight Lantern'], [7, 8, 1], 'Suspicious Mage'),
                     'Abandoned Campsite': Location(['Tinkle Berry', 'Bungle Berry', 'Whispering Leaf', 'Felix 99'], [12, 14, 2, 1], None)
                 }
+            },
+            2: {
+                'title': "2: The Hardy Sea of Flying Fish",
+                'sections': {
+                    1: "The Pond in the Sky",
+                    2: "Cloud Nine",
+                    3: "Swirling Pool of Whirl"
+                },
+                'boundaries': {
+                    1: (0, 18),
+                    2: (19, 36),
+                    3: (37, 54)
+                },
+                'building_pos': {
+                    1: 7,
+                    2: 32,
+                    3: 45
+                },
+                'monsters': ch2_monsters,
+                'locations': {
+                    'The Pond in the Sky' : Location(['Conch Horn', 'Chrono Vial'], [1, 1], 'Bubba Boo'),
+                    'Cloud Nine' : Location(['Nonalcoholic Mead', 'Katzenjammer', 'Spiked Freshwater', 'Espee de Fue'], [1, 2, 1, 1], 'Forrest Sump'),
+                    'Swirling Pool of Whirl' : Location(['Frozen Berry', 'Conch Horn'], [16, 1], 'Queen Mariana'),
+                }
+            },
+            3: {
+                'title': "3: The Mountain Bearing Shiny Teeth",
+                'sections': {
+                    1: "Cold Cavern",
+                    2: "Mysterious Door"
+                },
+                'boundaries': {
+                    1: (0, 18),
+                    2: (19, 36),
+                },
+                'building_pos': {
+                    1: 14,
+                    2: 36
+                },
+                'monsters': ch3_monsters,
+                'locations': {
+                    'Cold Cavern' : Location(['Fur Coat', 'Frozen Berry', 'Unlit Torch', 'Tufts of Snow'], [1, 7, 1, 4], 'Doctor Good'),
+                    'Mysterious Door' : Location(None, None, 'Frostfault'),
+                }
+            },
+            4: {
+                'title': "4: The Hideout",
+                'sections': {
+                    1: "Dusty Lab Cell",
+                    2: "Industrial Lair"
+                },
+                'boundaries': {
+                    1: (0, 18),
+                    2: (19, 36),
+                },
+                'building_pos': {
+                    1: 8,
+                    2: 27
+                },
+                'monsters': ch4_monsters,
+                'locations': {
+                    'Dusty Lab Cell' : Location(['Chrono Vial', 'Chrono Core', 'Adrenaline-Booster'], [1, 1, 1], None)
+                }
             }
-            # Add other chapters here
         }
 
     def clear_screen(self):
@@ -108,6 +169,12 @@ class Game:
             if section_start <= building_pos <= section_end:
                 position_display[building_pos - section_start] = "⾕"
             
+            tp_pos = 0
+            
+            # Build the TP to next location
+            if current_section == 2:
+                tp_pos = position_display[-1] = "◈"
+            
             # Build the player
             if section_start <= building_pos <= section_end:
                 player_index = player_pos - section_start
@@ -122,7 +189,7 @@ class Game:
 
             
             # Interaction prompts
-            if player_pos == building_pos:
+            if player_pos == building_pos or player_pos == tp_pos: # fix player-tp overlap interaction
                 print('[E] to interact')
             
             # Movement input
@@ -141,7 +208,7 @@ class Game:
             if move == 'q':
                 print('Thank you for playing!')
                 time.sleep(1)
-                break
+                exit()
             elif move == 'a':
                 if player_pos > 0: #chapter['boundaries'][current_section][0] or player_pos != 0:
                     player_pos -= 1
@@ -159,6 +226,16 @@ class Game:
                 self.player.open_inventory(items_movement, items_fighting)
             elif move == 'e' and player_pos == building_pos:
                 self.enter_location(chapter['sections'][current_section])
+            elif move == 'e' and player_pos == tp_pos:
+                move_on = input("Are you sure you want to move on? ([Y] Yes, [N] No):\t").strip().lower()
+                if move_on == 'y':
+                    break
+                elif move_on == 'n':
+                    continue
+                else:
+                    print("Please enter Y or N.")
+                    time.sleep(1)
+                    continue
             else:
                 print("\nInvalid input. Use A/D to move, I for inventory, E to interact.\n")
                 time.sleep(0.8)
@@ -173,76 +250,34 @@ class Game:
                 if self.player.health <= 0:
                     return
 
-
-    def start(self):
+    def ch1(self):
+        time.sleep(1)
         print('\nFROM DEVS: Use a VSCode terminal for a better experience.')
-        time.sleep(2)
+        time.sleep(1.5)
         self.display_chapter("1: The Lonely Forest")
-        time.sleep(2)
+        time.sleep(1)
         self.movement_loop(1)
+    
+    def ch2(self, travel_method):
+        if travel_method:
+            self.chapters[2]['monsters'] = ch2_monsters
+            del self.chapters[2]['sections'][3], self.chapters[2]['boundaries'][3], self.chapters[2]['building_pos'][3], self.chapters[2]['locations']['Swirling Pool of Whirl']
+        else: # finish this for crossing sea in boat
+            #self.chapters[2]['monsters'] = 
+            pass
+        self.display_chapter("2: The Hardy Sea of Flying Fish")
+        time.sleep(1)
+        self.movement_loop(2)
 
 if __name__ == "__main__":
     game = Game()
-    game.start()
-    
-''' put this in a txt file
-
-chapter("PROLOGUE")
-
-time.sleep(1)
-print("SOMEWHERE HIGH UP...\n")
-time.sleep(2)
-
-print("*poof*")
-time.sleep(1)
-
-print("\t???: Finally... after so long, it is FINALLY done... my masterpiece!")
-time.sleep(0.5)
-print("*Something rumbles.*")
-time.sleep(0.5)
-print("\t???: Oh, be quiet, Torricend. You can’t even begin to fathom how important this serum is! With it, the wizarding world will HAVE to acknowledge me!")
-time.sleep(0.8)
-print("*Torricend rumbles again.*")
-time.sleep(0.5)
-print("\t???: It’s so exciting, I know. And I think I have a test subject in mind...")
-
-time.sleep(1)
-print("\nIN THE ROYAL PALACE...\n")
-time.sleep(2)
-
-print("\tKing Vaughan: Maribelle, you know it’s not safe to go out right now-")
-time.sleep(0.8)
-print("\tPrincess Maribelle: Nonsense, father! There hasn’t been an attack in months! Plus, you know how much I despise being locked away in the castle all day! Now, imagine that for an entire week! I have begun to lose memory of what the birds and trees look like...")
-time.sleep(0.8)
-print("\tKing Vaughan: Princess, you must understand that this is all in your good interest. If you are attacked, I do not know how well I can handle that news again!")
-time.sleep(0.8)
-print("\tPrincess Maribelle: Father, are you not concerned about the townsfolk? The recent earthquakes that ravage our city have taken a toll on them! It is absolutely imperative that we at the least send word their way that we have not forgotten them-")
-time.sleep(0.8)
-print("\tKing Vaughan: In this madness?! Princess, there are mutants lurking our very courtyards. In what world will we be able to make it outside the castle grounds alive, lest we be gravely injured by their unhinged maws and elongated claws?!")
-time.sleep(0.8)
-print("*Before Princess Maribelle can respond, a violent earthquake rocks the castle. The vibrations get stronger and stronger before, suddenly, the floor beneath them crumbles as a giant dog-like monster with green vessels wrapped around its body digs its way out with claws as long as the Queen Mary.*")
-time.sleep(2)
-print("\tPrincess Maribelle: WHAT IN THE WORLD IS GOING ON?!")
-time.sleep(0.8)
-print("*Her screams are abruptly silenced by the being, its serrated claws delicately closing around her and sequestering her from the rest of the world. Almost as quickly as it comes, the being disappears, bringing Princess Maribelle with it.*")
-time.sleep(2)
-
-time.sleep(1)
-print("DEEP IN THE FOREST...\n")
-time.sleep(2)
-
-print("*You receive a scroll while out gathering Tinkle Berries.*")
-time.sleep(0.8)
-print("\t???: Another quest… from the King?! What a surprise. I thought he’d want nothing to do with me after attempting to court the Lady.")
-time.sleep(0.8)
-print("*You skim the letter. Somewhere in the beginning, the King makes it clear that you’re only being hired because of your skill and that he is overlooking your sour relationship with him.*")
-time.sleep(2)
-
-player_name = input("Sign your name on the scroll to accept the quest:\t").strip()
-
-time.sleep(1)
-print("*You begrudgingly accept the quest.*")
-time.sleep(1)
-print(f"\t{player_name}: Very well... the Berries will have to wait.")
-time.sleep(0.8)
-'''
+    game.player.setName(runPrologue()) # prologue
+    game.ch1() # run ch 1
+    help_gale = runCh2Intro() # run ch 2
+    if help_gale:
+        helpedGale
+        travel_above = True
+    else:
+        ignoredGale
+        travel_above = False
+    game.ch2(travel_above)

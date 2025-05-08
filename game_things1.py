@@ -45,6 +45,9 @@ class Player:
         self.equipped_weapon = 'Amber Duel'
         self.in_battle = False
     
+    def setName(self, name):
+        self.name = name
+    
     def enter_battle(self):
         self.in_battle = True
     
@@ -68,12 +71,14 @@ class Player:
             self.inventory[item] = amounts[new_items.index(item)]
         print('Inventory updated. Added items:\n', '-', '\n - '.join([f'{self.inventory[item]} {item}' for item in new_items]))
     
-    def remove_from_inventory(self, used_items, amounts):
-        for item in used_items:
-            self.inventory[item][amounts[used_items.index(item)]] -= 1
-            if self.inventory[item][amounts[used_items.index(item)]] == 0:
-                del self.inventory[item][amounts[used_items.index(item)]]
-    
+    def remove_from_inventory(self, item):
+        if item not in self.inventory.keys():
+            print("Item not found in inventory.")
+            return
+        self.inventory[item] -= 1
+        if self.inventory[item] == 0:
+            del self.inventory[item]
+
     def craft_inventory(self):
         if len(self.materials) != 0:
             print('Inventory (Materials)\n', '-', '\n- '.join([thing for thing in self.materials]), "\n")
@@ -121,25 +126,26 @@ class Player:
                         elif item_name.lower() == "beetlelight lantern" and self.in_battle == False:
                             print(items_movement['Beetlelight Lantern'])
                         
-                        self.remove_from_inventory(item_name, 1) # DEBUG THIS
+                        self.remove_from_inventory(item_name) # DEBUG THIS
                         
                         break
-                    elif item_name.title() in items_fighting.keys() and self.in_battle == True:
+                    elif item_name.title() in items_fighting.keys() and self.in_battle:
                         # use battle item
                         if "hp" in items_fighting[item_name].keys():
                             if self.health + items_fighting[item_name]['hp'] <= self.max_health:
                                 self.health += items_fighting[item_name]['hp']
                             elif self.health + items_fighting[item_name]['hp'] > self.max_health:
                                 self.health = self.max_health
-                            print("HP increased to", self.health)
+                            print("HP increased to", self.health, "\n")
                         if "atk" in items_fighting[item_name].keys():
                             self.attack += items_fighting[item_name]['atk']
-                            print("ATK increased to", self.attack)
+                            print("ATK increased to", self.attack, "\n")
                         if "def" in items_fighting[item_name].keys():
                             self.defense += items_fighting[item_name]['def']
-                            print("DEF increased to", self.defense)
-                        print('user should be in battle CODE THIS')
-                    elif item_name.lower() == "skilled crafter":
+                            print("DEF increased to", self.defense, "\n")
+                        
+                        self.remove_from_inventory(item_name)
+                    elif item_name.lower() == "skilled crafter" and not self.in_battle:
                         # use craft_inventory method
                         print('craft_inventory needs to open CODE THIS')
                     else:
@@ -191,7 +197,6 @@ class Monster:
 
     def take_dmg(self, dmg):
         self.health = max(0, self.health - dmg)
-        print(f"{self.name} takes {dmg} damage! Remaining HP: {self.health}/{self.max_health}")
 
     def is_defeated(self):
         return self.health <= 0
@@ -214,7 +219,7 @@ class Location:
         self.character = character
         self.firstTimeEntering = True
 
-weapons = {'Amber Duel' : Weapon('Amber Duel', 8, 0, 0, None, 0, [0], None), # 'location' : "Spawn"
+weapons = {'Amber Duel' : Weapon('Amber Duel', 10, 0, 0, None, 0, [0], None), # 'location' : "Spawn"
             "Dark-Dweller" : Weapon('Dark-Dweller', 18, 0.03, 6, 'atk', 2, [2], ['Dehydrated Shoots']), # 'location' : "The Lonely Forest"
             "Felix 99" : Weapon('Felix 99', 15, 0, 0, None, 0, [0], None), # 'location' : "The Lonely Forest"
             "Espee De Fue" : Weapon('Espee De Fue', 50, 6, 3, 'atk', 5, [1, 7], ['Dehydrated Shoots', 'Spine Fragments']), # 'location' : "The Hardy Sea of Flying Fish"
