@@ -41,15 +41,16 @@ class Player:
         self.defense = 0
         self.inventory = {'Skilled Crafter' : 1, 'Tinkle Berry' : 4}
         self.materials = {}
-        self.weapons = {'Amber Duel' : Weapon('Amber Duel', 8, 0, 0, None, 0, [0], None)}
+        self.weapons = {'Amber Duel' : Weapon('Amber Duel', 10, 0, 0, None, 0, [0], None)}
         self.equipped_weapon = 'Amber Duel'
         self.in_battle = False
+        self.moves = 0
     
     def setName(self, name):
         self.name = name
-    
-    def enter_battle(self):
-        self.in_battle = True
+
+    def battle(self):
+        self.in_battle = not self.in_battle
     
     def add_weapon_to_inv(self, weapons, new_weapon):
         self.weapons[new_weapon] = weapons[new_weapon]
@@ -82,90 +83,94 @@ class Player:
     def craft_inventory(self):
         if len(self.materials) != 0:
             print('Inventory (Materials)\n', '-', '\n- '.join([thing for thing in self.materials]), "\n")
-            #
+            # mahee
+            # ask what user wants to craft.
+            # if user's materials >= materials needed to make item,
+            # then add that item to user inventory and remove that amt of materials from user's materials
         else:
             print("You have no materials in your inventory.\n")
+            time.sleep(1)
             return
     
+    def weapon_inventory(self):
+        # 'w' input in open_inventory
+        print('\n - '.join([weapon.name for weapon in self.weapons]))
+        # mahee
+        # ask user if they want to equip or upgrade a weapon.
+        # do the appropriate task.
+    
+    def recipe_inventory(self):
+        # 'r' input in open_inventory
+        # mahee
+        # ask user what item they want to craft. if they had/have it in their inventory, they can craft it.
+        # display the material and amount of material needed to craft the item
+        pass # delete this line when done
+
     def open_inventory(self, items_movement, items_fighting):
+        def use_item_effects(item_data):
+            if "hp" in item_data:
+                self.health = min(self.health + item_data['hp'], self.max_health)
+                print(f"HP increased to {self.health}")
+            if "atk" in item_data:
+                self.attack += item_data['atk']
+                print(f"ATK increased to {self.attack}")
+            if "def" in item_data:
+                self.defense += item_data['def']
+            print(f"DEF increased to {self.defense}")
+
         while True:
-            print('Inventory (Items)\n', '-', '\n - '.join([f'{self.inventory[thing]} {thing}' for thing in self.inventory]), "\n")
-            
+            inv_display = '\n - '.join([f'{self.inventory[thing]} {thing}' for thing in self.inventory])
+            print(f"Inventory (Items)\n - {inv_display}\n")
+
             try:
-                if self.in_battle: action = input("[E] Use Item, [Q] Close Inventory: ").strip().lower()
-                else: action = input("[E] Use Item, [R] View Craft Recipes, [W] View Weapons, [Q] Close Inventory: ").strip().lower()
-            except TypeError:
-                print("\nPlease enter a letter (E, R, W, Q).\n")
-                time.sleep(0.8)
+                action = input("[E] Use Item" + (", [Q] Close Inventory: " if self.in_battle else ", [R] Item Recipe, [W] Weapons, [Q] Quit: ")).strip().lower()
             except Exception:
                 print("\nPlease enter a valid input.\n")
                 time.sleep(0.8)
+                continue
 
             if action == 'e':
                 while True:
-                    item_name = input("Enter the name of the item you would like to use ([Q] to quit): ").strip().title()
+                    item_name = input("Enter item name ([Q] Close): ").strip().title()
+                    if item_name == 'Q': break
                     
-                    if item_name == 'Q':
+                    if item_name.lower() == "skilled crafter" and not self.in_battle: # handle crafting
+                        self.craft_inventory()
                         break
-                    
-                    if item_name in items_movement.keys() and self.in_battle == False:
+                    elif item_name in items_movement and not self.in_battle: # handle movement items
+                        if item_name.lower() == "beetlelight lantern" and not self.in_battle:
+                            self.moves = 0
                         print(f"You used {item_name}.")
-                        
-                        if "hp" in items_movement[item_name].keys():
-                            if self.health + items_movement[item_name]['hp'] <= self.max_health:
-                                self.health += items_movement[item_name]['hp']
-                            elif self.health + items_movement[item_name]['hp'] > self.max_health:
-                                self.health = self.max_health
-                            print("HP increased to", self.health)
-                        if "atk" in items_movement[item_name].keys():
-                            self.attack += items_movement[item_name]['atk']
-                            print("ATK increased to", self.attack)
-                        if "def" in items_movement[item_name].keys():
-                            self.defense += items_movement[item_name]['def']
-                            print("DEF increased to", self.defense)
-                        elif item_name.lower() == "beetlelight lantern" and self.in_battle == False:
-                            print(items_movement['Beetlelight Lantern'])
-                        
-                        self.remove_from_inventory(item_name) # DEBUG THIS
-                        
-                        break
-                    elif item_name.title() in items_fighting.keys() and self.in_battle:
-                        # use battle item
-                        if "hp" in items_fighting[item_name].keys():
-                            if self.health + items_fighting[item_name]['hp'] <= self.max_health:
-                                self.health += items_fighting[item_name]['hp']
-                            elif self.health + items_fighting[item_name]['hp'] > self.max_health:
-                                self.health = self.max_health
-                            print("HP increased to", self.health, "\n")
-                        if "atk" in items_fighting[item_name].keys():
-                            self.attack += items_fighting[item_name]['atk']
-                            print("ATK increased to", self.attack, "\n")
-                        if "def" in items_fighting[item_name].keys():
-                            self.defense += items_fighting[item_name]['def']
-                            print("DEF increased to", self.defense, "\n")
-                        
+                        item_data = items_movement[item_name]
+                        if isinstance(item_data, dict):
+                            use_item_effects(item_data)
                         self.remove_from_inventory(item_name)
-                    elif item_name.lower() == "skilled crafter" and not self.in_battle:
-                        # use craft_inventory method
-                        print('craft_inventory needs to open CODE THIS')
-                    else:
+                        break
+                    elif self.in_battle and item_name in items_fighting: # handle battle items
+                        print(f"You used {item_name}.")
+                        item_data = items_fighting[item_name]
+                        if isinstance(item_data, dict):
+                            use_item_effects(item_data)
+                        self.remove_from_inventory(item_name)
+                        break
+                    else: # item was misspelled, not found, inappropriate in situation, etc.
                         print('\nItem cannot be used right now.\n')
+
             elif action == 'r':
-                # view item crafting recipe. make a list
-                # and new key:value pairs for each craftable item in items lists.
-                print('need list of crafting items')
+                self.recipe_inventory()
+                print('unfinished') # delete this line when recipe_inventory() is done
                 pass
-            elif action == 'w': 
-                # view weapons
-                print('need list of weapons')
+            elif action == 'w':
+                self.weapon_inventory()
+                print('unfinished') # delete this line when recipe_inventory() is done
                 pass
-            elif action == 'q': # CLose inventory
+            elif action == 'q':
                 print("\nInventory closed.\n")
                 time.sleep(0.8)
                 return
             else:
-                print("\nPlease enter either A, D, or I.\n")
-                return
+                print("\nPlease enter either E, R, W, or Q.\n")
+                time.sleep(0.8)
 
 class Monster:
     ''' Simulate a monster that can fight the Player. '''
@@ -257,7 +262,7 @@ items_fighting = {'Bungle Berry': {'hp' : 7}, #  'location': 'The Lonely Forest'
         'Chrono Core' : {'atk' : 25}, # 'location': 'The Hideout'
         "Beast’s Final Hour" : {'hp' : 70, 'atk' : 90, 'def': 50}} # 'location': 'The Hideout'
 
-items_movement = {'Beetlelight Lantern' : "0% monster encounter chance for 8 moves.",
+items_movement = {'Beetlelight Lantern' : "0% monster encounter chance for 10 moves.",
         'Unlit Torch' : {'spd' : 3, 'def' : 3, 'location': 'The Mountain Bearing Shiny Teeth'},
         'Fur Coat' : {'spd' : 5, 'atk' : 2, 'location': 'The Mountain Bearing Shiny Teeth'}}
 
@@ -271,7 +276,8 @@ ch4_monsters = {'Skelerat' : Monster('Skelerat', 95, ['Spine Fragments'], 'Scree
                 'Enhanced Drudead' : Monster('Enhanced Drudead', 200, ['Dehydrated Shoots'], 'Tackle', 30, 'Body Slam', 75)}
 all_monsters = [ch1_monsters, ch2_monsters, ch3_monsters, ch4_monsters] # list of dictionaries
 boss_monsters = {None : None,
-                'Poisonorous' : Boss('Poisonorous', 70, ['Spine Fragments', 'Translucent Droplets'], 'Spikeball', 13, 'Drill Sting', 15, 'Noxious Infestation', 30),
+                'Poisonorous' : Boss('Poisonorous', 65, ['Spine Fragments', 'Translucent Droplets'], 'Spikeball', 13, 'Drill Sting', 15, 'Noxious Infestation', 30),
+                'Waile' : Boss('Waile', 70, ['Spine Fragments', 'Translucent Droplets'], 'Jet Click', 18, 'Fallen Soldier', 40, None, None),
                 None : None} # ch 1 and 3 have no mini bosses
 special_boss_monsters = {'Frostfault' : Boss('Frostfault', 280, None, 'Frostbite', 35, 'Shattering Verglas', 45, "Winter's Fury", 70),
                 'Stage 1 Torricend' : Boss('Stage 1 Torricend', 700, None, 'Lunge', 40, 'Waste Pump', 80, 'Eroding Rumble', 110),

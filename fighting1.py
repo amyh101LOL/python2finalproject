@@ -2,7 +2,7 @@ import os, time
 from game_things1 import *
 
 def battle(player, monster):
-    player.enter_battle()
+    player.battle()
     os.system('cls' if os.name == 'nt' else 'clear')
     print(f"\nYou encountered a {monster.name}!\n")
     time.sleep(0.6)
@@ -43,6 +43,7 @@ def battle(player, monster):
                 return
             time.sleep(0.8)
             print(f"It dropped: {monster.material}")
+            player.battle()
             return
         
         # Monster attacks

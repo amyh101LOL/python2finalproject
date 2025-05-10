@@ -40,7 +40,7 @@ def runPrologue():
     time.sleep(2)
 
     time.sleep(1)
-    print("DEEP IN THE FOREST...\n")
+    print("\nDEEP IN THE FOREST...\n")
     time.sleep(2)
 
     print("*You receive a scroll while out gathering Tinkle Berries.*")

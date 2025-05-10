@@ -6,13 +6,13 @@ from turtle import position
 from ch2 import helpedGale, ignoredGale, runCh2Intro
 from game_things1 import Player, Location, Weapon, Monster, Boss,  items_movement, items_fighting, ch1_monsters, ch2_monsters, ch3_monsters, ch4_monsters
 from fighting1 import battle
-from prologue import runPrologue
+from prologue_ch1 import runPrologue
 
 class Game:
     def __init__(self):
         self.player = Player("", 80, 80)
         self.setup_chapters()
-        
+
     def setup_chapters(self):
         self.chapters = {
             1: {
@@ -33,30 +33,61 @@ class Game:
                 'locations': {
                     'Cottage in the Woods': Location(['Tinkle Berry', 'Bungle Berry', 'Beetlelight Lantern'], [7, 8, 1], 'Suspicious Mage'),
                     'Abandoned Campsite': Location(['Tinkle Berry', 'Bungle Berry', 'Whispering Leaf', 'Felix 99'], [12, 14, 2, 1], None)
+                },
+                'characters' : {
+                    'Movable' : '웃',
+                    'Interactable' : "⾕",
+                    'Ground' : '_'
                 }
             },
-            2: {
+            20: {
                 'title': "2: The Hardy Sea of Flying Fish",
                 'sections': {
                     1: "The Pond in the Sky",
-                    2: "Cloud Nine",
-                    3: "Swirling Pool of Whirl"
+                    2: "Cloud Nine"
                 },
                 'boundaries': {
                     1: (0, 18),
-                    2: (19, 36),
-                    3: (37, 54)
+                    2: (19, 36)
                 },
                 'building_pos': {
                     1: 7,
-                    2: 32,
-                    3: 45
+                    2: 32
                 },
                 'monsters': ch2_monsters,
                 'locations': {
                     'The Pond in the Sky' : Location(['Conch Horn', 'Chrono Vial'], [1, 1], 'Bubba Boo'),
-                    'Cloud Nine' : Location(['Nonalcoholic Mead', 'Katzenjammer', 'Spiked Freshwater', 'Espee de Fue'], [1, 2, 1, 1], 'Forrest Sump'),
+                    'Cloud Nine' : Location(['Nonalcoholic Mead', 'Katzenjammer', 'Spiked Freshwater', 'Espee de Fue'], [1, 2, 1, 1], 'Forrest Sump')
+                },
+                'characters' : {
+                    'Movable' : '𓆟',
+                    'Interactable' : "☁︎",
+                    'Ground' : ' '
+                }
+            },
+            21: {
+                'title': "2: The Hardy Sea of Flying Fish",
+                'sections': {
+                    1: "The Hardy Sea",
+                    2: "The Swirling Pool of Whirl"
+                },
+                'boundaries': {
+                    1: (0, 18),
+                    2: (19, 36)
+                },
+                'building_pos': {
+                    1: None,
+                    2: 27
+                },
+                'monsters': ch2_monsters,
+                'locations': {
+                    None : None,
                     'Swirling Pool of Whirl' : Location(['Frozen Berry', 'Conch Horn'], [16, 1], 'Queen Mariana'),
+                },
+                'characters' : {
+                    'Movable' : '⏅',
+                    'Interactable' : "｡○",
+                    'Ground' : 'ꕀ'
                 }
             },
             3: {
@@ -77,6 +108,11 @@ class Game:
                 'locations': {
                     'Cold Cavern' : Location(['Fur Coat', 'Frozen Berry', 'Unlit Torch', 'Tufts of Snow'], [1, 7, 1, 4], 'Doctor Good'),
                     'Mysterious Door' : Location(None, None, 'Frostfault'),
+                },
+                'characters' : {
+                    'Movable' : '웃',
+                    'Interactable' : "⛩",
+                    'Ground' : '⋆❅₊'
                 }
             },
             4: {
@@ -96,6 +132,11 @@ class Game:
                 'monsters': ch4_monsters,
                 'locations': {
                     'Dusty Lab Cell' : Location(['Chrono Vial', 'Chrono Core', 'Adrenaline-Booster'], [1, 1, 1], None)
+                },
+                'characters' : {
+                    'Movable' : '웃',
+                    'Interactable' : "⛓",
+                    'Ground' : '_'
                 }
             }
         }
@@ -143,6 +184,8 @@ class Game:
         chapter = self.chapters[chapter_num]
         player_pos = 0
         current_section = 1
+        choose_move_on = False
+        self.player.moves = 0
         
         while True:
             # Check for section change
@@ -160,36 +203,30 @@ class Game:
             section_len = section_end - section_start + 1
 
             # Display range is always 20 chars
-            position_display = [' '] * section_len
+            position_display = [chapter['characters']['Ground']] * section_len
 
-            # Place building and player if they're within the current view
+            # Building and tp indexes
             building_pos = chapter['building_pos'][current_section]
             
             # Build the location
             if section_start <= building_pos <= section_end:
-                position_display[building_pos - section_start] = "⾕"
-            
-            tp_pos = 0
+                position_display[building_pos - section_start] = chapter['characters']['Interactable']
             
             # Build the TP to next location
             if current_section == 2:
-                tp_pos = position_display[-1] = "◈"
+                position_display[section_len - 1] = "◈"
             
             # Build the player
-            if section_start <= building_pos <= section_end:
-                player_index = player_pos - section_start
-                if 0 <= player_index < section_len:
-                    position_display[player_index] = '웃'
-                else:
-                    print(f"out of bounds: index {player_pos}")
+            player_index = player_pos - section_start
+            if 0 <= player_index < section_len:
+                position_display[player_index] = chapter['characters']['Movable']
             else:
-                print(f"error: player_pos oob")
+                print(f"out of bounds: index {player_pos}")
 
             print(''.join(position_display))
 
-            
             # Interaction prompts
-            if player_pos == building_pos or player_pos == tp_pos: # fix player-tp overlap interaction
+            if player_pos == building_pos or player_pos == section_end and current_section == 2: # fix player-tp overlap interaction
                 print('[E] to interact')
             
             # Movement input
@@ -210,13 +247,13 @@ class Game:
                 time.sleep(1)
                 exit()
             elif move == 'a':
-                if player_pos > 0: #chapter['boundaries'][current_section][0] or player_pos != 0:
+                if player_pos > 0:
                     player_pos -= 1
                 else:
                     print("Can't go further left!")
                     time.sleep(0.5)
-            elif move == 'd': # fix entering new section (wont send player back to index 0)
-                if player_pos < self.chapters[chapter_num]['boundaries'][2][1]: #chapter['boundaries'][current_section][1]: #or player_pos != 19:
+            elif move == 'd':
+                if player_pos < self.chapters[chapter_num]['boundaries'][2][1]:
                     player_pos += 1
                 else:
                     print("Can't go further right!")
@@ -226,25 +263,33 @@ class Game:
                 self.player.open_inventory(items_movement, items_fighting)
             elif move == 'e' and player_pos == building_pos:
                 self.enter_location(chapter['sections'][current_section])
-            elif move == 'e' and player_pos == tp_pos:
-                move_on = input("Are you sure you want to move on? ([Y] Yes, [N] No):\t").strip().lower()
-                if move_on == 'y':
-                    break
-                elif move_on == 'n':
-                    continue
-                else:
-                    print("Please enter Y or N.")
-                    time.sleep(1)
-                    continue
+            elif move == 'e' and player_pos == section_end and current_section == 2:
+                while True:
+                    move_on = input("Are you sure you want to move on? ([Y] Yes, [N] No):\t").strip().lower()
+                    if move_on == 'y':
+                        choose_move_on = True
+                        break
+                    elif move_on == 'n':
+                        self.clear_screen()
+                        break
+                    else:
+                        print("Please enter Y or N.")
+                        time.sleep(1)
+                        continue
             else:
                 print("\nInvalid input. Use A/D to move, I for inventory, E to interact.\n")
                 time.sleep(0.8)
+                self.clear_screen
                 continue
             
+            if choose_move_on: # go to next chapter
+                break
+            
+            self.player.moves += 1
             self.clear_screen()
             
-            # Random monster encounters (when not at building)
-            if player_pos != building_pos and random.randint(1, 50) >= 42:
+            # Random monster encounters (when not at building)  v FIX THIS
+            if player_pos != building_pos and (player_pos != section_end and current_section != 2) and random.randint(1, 25) >= 23 and self.player.moves > 10:
                 monster = random.choice(list(chapter['monsters'].values()))
                 battle(self.player, monster)
                 if self.player.health <= 0:
@@ -258,26 +303,27 @@ class Game:
         time.sleep(1)
         self.movement_loop(1)
     
-    def ch2(self, travel_method):
-        if travel_method:
-            self.chapters[2]['monsters'] = ch2_monsters
-            del self.chapters[2]['sections'][3], self.chapters[2]['boundaries'][3], self.chapters[2]['building_pos'][3], self.chapters[2]['locations']['Swirling Pool of Whirl']
-        else: # finish this for crossing sea in boat
-            #self.chapters[2]['monsters'] = 
-            pass
+    def ch20(self):
+        time.sleep(1)
         self.display_chapter("2: The Hardy Sea of Flying Fish")
         time.sleep(1)
-        self.movement_loop(2)
+        self.movement_loop(20)
+    
+    def ch21(self):
+        time.sleep(1)
+        self.display_chapter("2: The Hardy Sea of Flying Fish")
+        time.sleep(1)
+        self.movement_loop(21)
 
 if __name__ == "__main__":
     game = Game()
     game.player.setName(runPrologue()) # prologue
+    player_name = game.player.name
     game.ch1() # run ch 1
-    help_gale = runCh2Intro() # run ch 2
+    help_gale = runCh2Intro(player_name) # run ch 2
     if help_gale:
-        helpedGale
-        travel_above = True
+        helpedGale(player_name)
+        game.ch20()
     else:
-        ignoredGale
-        travel_above = False
-    game.ch2(travel_above)
+        ignoredGale(player_name)
+        game.ch21()
