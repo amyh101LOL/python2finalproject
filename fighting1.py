@@ -2,6 +2,10 @@ import os, time
 from game_things1 import *
 
 def battle(player, monster):
+    """
+    Runs a fight between the player and the monster until one is defeated or the player retreats.
+    The player can choose to fight, open the inventory, or retreat
+    """
     player.battle()
     os.system('cls' if os.name == 'nt' else 'clear')
     print(f"\nYou encountered a {monster.name}!\n")
