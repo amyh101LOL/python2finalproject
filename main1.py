@@ -4,9 +4,11 @@ import random
 import os
 from turtle import position
 from ch2 import helpedGale, ignoredGale, runCh2Intro
+from mini_games import *
 from game_things1 import Player, Location, Weapon, Monster, Boss,  items_movement, items_fighting, ch1_monsters, ch2_monsters, ch3_monsters, ch4_monsters
 from fighting1 import battle
 from prologue_ch1 import runPrologue
+
 
 class Game:
     def __init__(self):
