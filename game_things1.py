@@ -98,6 +98,36 @@ class Player:
         # mahee
         # ask user if they want to equip or upgrade a weapon.
         # do the appropriate task.
+        action = input("\nYou can choose to \n[1]Equip\n[2]Upgrade\n[3]Exit\nChoice: ").strip()
+        if action != 3:
+            weapon_name = input("Enter the weapon name: ").strip().title()
+            if weapon_name not in self.weapons:
+                print("Weapon not found")
+
+            if action == 1:
+                self.equip_weapon(weapon_name)
+            elif action == 2:
+                if weapon.upgrade_count <= 0:
+            print(f"{weapon_name} cannot be upgraded further.")
+            return
+
+        print(f"Upgrading {weapon_name}...\n")
+        # Check if the player has the necessary materials to upgrade
+        if set(weapon.lvl_up_materials).issubset(set(self.materials.keys())):
+            total_materials = True
+            for material in weapon.lvl_up_materials:
+                if self.materials.get(material, 0) < weapon.lvl_up_mat_amt:
+                    print(f"Not enough {material} to upgrade.")
+                    total_materials = False
+                    break
+            if total_materials:
+                print(f"{weapon_name} successfully upgraded!")
+                weapon.lvl_up_weapon(self)
+                self.remove_from_inventory(weapon.lvl_up_materials)
+        else:
+            print("You don't have enough materials to upgrade this weapon.")
+    else:
+        print("Invalid action")
     
     def recipe_inventory(self):
         # 'r' input in open_inventory
