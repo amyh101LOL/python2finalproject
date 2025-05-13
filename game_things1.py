@@ -13,9 +13,6 @@ class Weapon:
         self.lvl_up_mat_amt = lvl_up_mat_amt # mat amt needed to lvl up
         self.lvl_up_materials = lvl_up_materials # list of mats required to lvl up weapon (list)
     
-    #def use_weapon(self):
-    #    return self.atk
-    
     def lvl_up_weapon(self, player):
         if self.upgrade_count > 0 and self.lvl_up_materials in player.materials:
             self.upgrade_count -= 1
@@ -50,7 +47,10 @@ class Player:
         self.name = name
 
     def battle(self):
-        self.in_battle = not self.in_battle
+        self.in_battle = True
+    
+    def exit_battle(self):
+        self.in_battle = False
     
     def add_weapon_to_inv(self, weapons, new_weapon):
         self.weapons[new_weapon] = weapons[new_weapon]
@@ -69,7 +69,10 @@ class Player:
     def add_to_inventory(self, new_items, amounts):
         print()
         for item in new_items:
-            self.inventory[item] = amounts[new_items.index(item)]
+            if item not in self.inventory.keys():
+                self.inventory[item] = amounts[new_items.index(item)]
+            else:
+                self.inventory[item] += amounts[new_items.index(item)]
         print('Inventory updated. Added items:\n', '-', '\n - '.join([f'{self.inventory[item]} {item}' for item in new_items]))
     
     def remove_from_inventory(self, item):
@@ -94,40 +97,42 @@ class Player:
     
     def weapon_inventory(self):
         # 'w' input in open_inventory
-        print('\n - '.join([weapon.name for weapon in self.weapons]))
+        print('\n - '.join([weapon for weapon in self.weapons.keys()]))
         # mahee
         # ask user if they want to equip or upgrade a weapon.
         # do the appropriate task.
-        action = input("\nYou can choose to \n[1]Equip\n[2]Upgrade\n[3]Exit\nChoice: ").strip()
-        if action != 3:
+        action = input("\n[1]Equip Weapon, [2] Upgrade Weapon, [3] Close Weapon Inventory: ").strip()
+        if action != '3':
             weapon_name = input("Enter the weapon name: ").strip().title()
             if weapon_name not in self.weapons:
                 print("Weapon not found")
 
-            if action == 1:
+            if action == '1':
                 self.equip_weapon(weapon_name)
-            elif action == 2:
-                if self.weapon.upgrade_count <= 0:
+            elif action == '2':
+                if self.weapons[weapon_name].upgrade_count <= 0:
                     print(f"{weapon_name} cannot be upgraded further.")
-            return
-
-        print(f"Upgrading {weapon_name}...\n")
-        # Check if the player has the necessary materials to upgrade
-        if set(self.weapon.lvl_up_materials).issubset(set(self.materials.keys())):
-            total_materials = True
-            for material in self.weapon.lvl_up_materials:
-                if self.materials.get(material, 0) < self.weapon.lvl_up_mat_amt:
-                    print(f"Not enough {material} to upgrade.")
-                    total_materials = False
-                    break
-            if total_materials:
-                print(f"{weapon_name} successfully upgraded!")
-                self.weapon.lvl_up_weapon(self)
-                self.remove_from_inventory(self.weapon.lvl_up_materials)
-            else:
-                print("You don't have enough materials to upgrade this weapon.")
-        else:
-            print("Invalid action")
+                    return
+                
+                # Check if the player has the necessary materials to upgrade
+                if set(self.weapon.lvl_up_materials).issubset(set(self.materials.keys())):
+                    total_materials = True
+                    for material in self.weapon.lvl_up_materials:
+                        if self.materials.get(material, 0) < self.weapon.lvl_up_mat_amt:
+                            print(f"Not enough {material} to upgrade.")
+                            total_materials = False
+                            break
+                    if total_materials:
+                        print(f"{weapon_name} successfully upgraded!")
+                        self.weapon.lvl_up_weapon(self)
+                        self.remove_from_inventory(self.weapon.lvl_up_materials)
+                    else:
+                        print("You don't have enough materials to upgrade this weapon.")
+                else:
+                    print("Invalid action.")
+                    return
+                
+                print(f"Upgrading {weapon_name}...\n")
     
     def recipe_inventory(self):
         # 'r' input in open_inventory

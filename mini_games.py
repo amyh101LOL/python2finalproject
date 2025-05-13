@@ -1,50 +1,61 @@
-import random
+import random, time
+from game_things1 import special_boss_monsters
+from fighting1 import battle
 
-def queen_mariana():
+def queen_mariana(poisonorous_defeated):
     """"""
-    poisonorous = True
-    if poisonorous == False:
-        pass
+    if poisonorous_defeated < 5:
+        print('unfinished')
         #add Queen Mariana's and the player's conversation where she laments over it
     else:
-        pass
+        print('unfinished')
         #add the conversation where she rewards the player with the Exodus 1600 and the Conch Horn
 
+def pulsing_wave(echoing_shards):
+    """ Interaction between the Player and Bubba Boo, the pond fisherman.
+        Player has the opportunity to get a new weapon by meeting a requirement. """
+    if echoing_shards >= 40:
+        print('unfinished')
+        #add the conversation where Bubba Boo rewards the player with the Pulsing Wave
+    else:
+        print('unfinished')
+        #add the conversation where Bubba Boo tells the player about the Pulsing Wave
+    return True
 
 def thimblerig():
     """Game of thimblerig. You get 2 tries. You can inspect a cup and lift it 
-    based on the bartender's facial expressions. Only one cup has the bartender's 
-    special under it!"""
-    cups = ['Nonalcoholic Mead', "Bartender's Special", 'Poisonous Drink']
+    based on the bartender's facial expressions. Only one cup has the Bartender's 
+    Special under it!"""
+    cups = ['Nonalcoholic Mead', "Bartender's Special", 'Katzenjammer']
     random.shuffle(cups)
     for x in range(2):
         print(f"Selection #{x+1} ")
-        selection = int(input("Inspect a cup:\n[1]\n[2]\n[3]\nEnter: "))   
+        selection = int(input("Inspect a cup ([1], [2], [3]): "))   
         cup = cups[selection-1]
+        
         print()
-        if cup == 'Nonalcoholic Mead':
-            print("Bartender Sump has no expressions on his face.")
-        elif cup == "Bartender's Special":
-            print("Bartender Sump is disappointed.")
-        elif cup == 'Poisonous Drink':
-            print("Bartender Sump is smirking.")
-        choice = input("Do you want to lift this cup?(y / n)\nEnter: ")
-        if choice.lower() == 'y':
-            break
-        else:
-            print("You can inspect another cup but, you must lift it.\n")
-    print(f"The item underneath your cup is the {cup}.")
-
-
-def pulsing_wave(echoing_shards):
-    """"""
-    if echoing_shards >= 40:
-        pass
-        #add the conversation where Bubba Boo rewards the player with the Pulsing Wave
-    else:
-        pass
-        #add the conversation where Bubba Boo tells the player about the Pulsing Wave
-
+        
+        if cup != 'Bartender\'s Special': print("Bartender Sump blinks blankly.")
+        else: print("Bartender Sump holds his breath nervously.")
+        
+        time.sleep(1)
+        
+        while True:
+            if x == 0:
+                choice = input("Do you want to lift this cup? ([Y] Yes / [N] No): ").strip().lower()
+            if choice == 'y': break
+            elif choice == 'n':
+                if x == 0:
+                    print("Choose your cup.\n")
+                break
+            else:
+                print("Please enter Y or N.")
+                continue
+        time.sleep(1)
+    
+    print(f"The item underneath is the {cup}.\n")
+    time.sleep(1)
+    return cup
 
 def tablet_puzzle(helped_gale, battles_fought):
     """a tablet asks the player riddles. When answered correctly, if the player has helped gale and fought more than a 100 battles, the player is rewarded
@@ -92,9 +103,7 @@ def mage_riddle():
         else:
             print("\nInvalid Response. Try again.")
 
-
-
-def frostfault_puzzle():
+def frostfault_puzzle(player):
     """Puzzle to arrange Greek letters in ascending order to awaken Frostfault."""
     greek_letters = {chr(num) for num in range(945, 950)}
     shuffled = list(greek_letters)
@@ -126,14 +135,16 @@ def frostfault_puzzle():
         except (ValueError, IndexError):
             print("Please enter five valid numbers (1-5).")
 
-    print(f"The circle ignites after {moves} moves — Frostfault awakens!")
+    print(f"*The circle ignites after {moves} moves — Frostfault awakens!*")
+    battle(special_boss_monsters['Frostfault'])
     frostfault_battle()
 
 def frostfault_battle():
-    """"""
+    """ Karma choice for Player. """
     choice = input("Do you spare Frostfault after battle: ").strip().lower()
     if choice == "yes":
-        print("Frostfault bows and grants you the key and Beast’s Final Hour!")
+        print("*Frostfault bows with acceptance and grants you the key.*")
+        time.sleep(1)
+        print("*His gratitude overflows, taking the form of the Beast’s Final Hour!*")
     else:
-        print("You slay Frostfault and take the key forcefully.")
-
+        print("You deal the final blow to Frostfault and rip the chilly key, dangling from the string around his stiff neck, off his body.")

@@ -78,13 +78,13 @@ class Game:
                     2: (19, 36)
                 },
                 'building_pos': {
-                    1: None,
+                    1: 4,
                     2: 27
                 },
                 'monsters': ch2_monsters,
                 'locations': {
-                    None : None,
-                    'Swirling Pool of Whirl' : Location(['Frozen Berry', 'Conch Horn'], [16, 1], 'Queen Mariana'),
+                    'The Hardy Sea' : Location(['Conch Horn'], [1], None),
+                    'The Swirling Pool of Whirl' : Location(['Frozen Berry', 'Conch Horn'], [16, 1], 'Queen Mariana'),
                 },
                 'characters' : {
                     'Movable' : '⏅',
@@ -160,24 +160,88 @@ class Game:
         self.clear_screen()
         
         if location_name == 'Cottage in the Woods':
-            print('You enter the homely cottage...')
+            print('*You enter the homely cottage...')
             time.sleep(2)
-            print('Nobody is home. You take some items from the table.')
+            print('Nobody is home. You take some items from the table.*')
             time.sleep(1.5)
             self.player.add_to_inventory(location.items, location.items_amt)
             time.sleep(1.5)
             self.leave_location()
         elif location_name == 'Abandoned Campsite':
-            print('You come across an abandoned campsite...')
+            print('*You come across an abandoned campsite...')
             time.sleep(2)
-            print("There are some useful items left behind.")
+            print("There are some useful items left behind.*")
             time.sleep(1.5)
             self.player.add_to_inventory(location.items, location.items_amt)
             time.sleep(1.5)
             self.leave_location()
-
+        elif location_name == 'The Pond in the Sky':
+            print('*You stop by a floating... pond? Gushing water splashes over the edges of layers upon layers of clouds. The sun glistens against the floating rolls, casting sparkles across the pond. The sublime sight gives way to a calm sigh from you.*')
+            visited_bubba_boo = pulsing_wave(self.materials['Echoing Shards'] if 'Echoing Shards' in self.materials.keys() else 0)
+        elif location_name == 'Cloud Nine':
+            print('*You land on yet another solid cloud. This time, it\'s holding an entire floating town. The first thing that catches your eye is a bar with a sign that has "DRINKS" scrawled on it.')
+            time.sleep(1)
+            print('The guy manning the bar is big, his arms toned with years of physical labor, most likely from handling all those crates behind him.*')
+            time.sleep(1)
+            
+            while True:
+                approach = input("Do you approach? ([Y] Yes, [N] No): ").strip().lower()
+                
+                if approach == 'y':
+                    break
+                elif approach == 'n':
+                    print('\n*You nervously turn away.*')
+                    time.sleep(1)
+                    return
+                else:
+                    print("Please enter Y or N.")
+                    time.sleep(1)
+            
+            time.sleep(1)
+            
+            print('*You make your way toward the bar, hands a bit shaky at the stormy sight of the tender behind the counter. You step up as the man finishes wiping dry a wine glass.*')
+            time.sleep(1)
+            print(f'\t{self.player.name}: Um, hello.')
+            time.sleep(3)
+            print("*For a second, you wonder if he might've ignored you. He then suddenly turns around and meets your gaze. He freezes in surprise.*")
+            time.sleep(1)
+            print("\t???: Oh! Hey, there! Sorry- did I make you wait long? Gosh, after the war, my hearing's been all ouf of sorts.")
+            time.sleep(1)
+            print("\tForrest Sump: I'm Forrest. Forrest Sump. Retired magical knight of Your Majesty's liege, now a bartender!")
+            time.sleep(1)
+            
+            if visited_bubba_boo:
+                print("\tForrest Sump: My ol' pal Boo send you? Well, then, I'm glad you found the right place!")
+            else:
+                print("I don't think I've seen you 'round these skies. What's your name?")
+                time.sleep(1)
+                print(f"\t{self.player.name}: It's {self.player.name}. Nice to meet you.")
+            
+            time.sleep(1)
+            print("\tForrest Sump: Say, wanna fancy me and my silly tradition with newcomers? Game of thimblerig!")
+            time.sleep(1)
+            print("*You recall some memories of playing it in your childhood. Except, with stones and coins rather than alcoholic beverages.*")
+            time.sleep(1)
+            print(f"{self.player.name}: Why not?")
+            time.sleep(1)
+            print("*Forrest Sump grins, his arms sweeping beneath the counter to reveal three large cups. In a flash, he pours together three different concoctions, slides them underneath the three big cups, and shuffles them with alacrity.")
+            time.sleep(1)
+            print("He backs away, excitement burning in his expression.*")     
+            time.sleep(1)
+            print("\tForrest Sump: Go ahead!")
+            self.player.add_to_inventory([thimblerig()], [1])
+            time.sleep(1)
+            print("*Forrest Sump opens his mouth to say something, but another customer calls for him. He excuses himself from your company with a helpless grin.")
+            time.sleep(1)
+            print("You figure it's time for you to get going, too.*")
+            self.leave_location()
+        elif location_name == 'The Hardy Sea':
+            self.player.add_to_inventory(['Conch Horn'], [1])
+            self.leave_location()
+        elif location_name == 'The Swirling Pool of Whirl':
+            queen_mariana()
     def leave_location(self):
-        print('\nReturning to the road...')
+        print('\nLeaving...')
         time.sleep(2)
         self.clear_screen()
         time.sleep(0.5)
@@ -290,14 +354,15 @@ class Game:
             self.player.moves += 1
             self.clear_screen()
             
-            # Random monster encounters (when not at building)  v FIX THIS
-            if player_pos != building_pos and (player_pos != section_end and current_section != 2) and random.randint(1, 25) >= 23 and self.player.moves > 10:
+            # Random monster encounters (when not at building)
+            if player_pos != building_pos and (player_pos != section_len - 1) and random.randint(1, 25) >= 23 and self.player.moves > 10:
                 monster = random.choice(list(chapter['monsters'].values()))
                 battle(self.player, monster)
                 if self.player.health <= 0:
                     return
 
     def ch1(self):
+        ''' Player starts in chapter 1. '''
         time.sleep(1)
         print('\nFROM DEVS: Use a VSCode terminal for a better experience.')
         time.sleep(1.5)
@@ -306,12 +371,14 @@ class Game:
         self.movement_loop(1)
     
     def ch20(self):
+        ''' Player travels with Gale for chapter 2. '''
         time.sleep(1)
         self.display_chapter("2: The Hardy Sea of Flying Fish")
         time.sleep(1)
         self.movement_loop(20)
     
     def ch21(self):
+        ''' Player travels by boat for chapter 2. '''
         time.sleep(1)
         self.display_chapter("2: The Hardy Sea of Flying Fish")
         time.sleep(1)

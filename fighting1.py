@@ -47,7 +47,7 @@ def battle(player, monster):
                 return
             time.sleep(0.8)
             print(f"It dropped: {monster.material}")
-            player.battle()
+            player.exit_battle()
             return
         
         # Monster attacks
